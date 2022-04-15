@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 // State of workers
 export enum WorkerState {
@@ -7,7 +7,7 @@ export enum WorkerState {
     RUNNING = 'RUNNING'
 }
 
-
+// The interface describing the worker slice
 export interface WorkerSlice {
     worker: WorkerState;
 }
@@ -18,7 +18,7 @@ const initialWorkerSliceState: WorkerSlice = {
 }
 
 // Slice creator
-const slice = createSlice({
+const workerSlice = createSlice({
     name: 'workers',
     initialState: initialWorkerSliceState,
     reducers: {
@@ -26,7 +26,19 @@ const slice = createSlice({
             ...state,
             worker: WorkerState.STOPPED,
         }),
+        setWorkerRunning: (state: WorkerSlice) =>({
+            ...state,
+            worker: WorkerState.RUNNING,
+        }),
+        setWorkerNotInitialized: (state: WorkerSlice) =>({
+            ...state,
+            worker: WorkerState.NOT_INITIALIZED,
+        }),
     },
 });
 
-export default slice.reducer
+// export the actions to set the state of our
+export const { setWorkerStopped, setWorkerRunning, setWorkerNotInitialized } = workerSlice.actions
+
+// export reducer to plug into our state provider
+export default workerSlice.reducer
