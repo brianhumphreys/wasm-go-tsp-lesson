@@ -1,20 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
- 
-// Types
+// State of workers
 export enum WorkerState {
     NOT_INITIALIZED = 'NOT_INITIALIZED',
     STOPPED = 'STOPPED',
     RUNNING = 'RUNNING'
 }
 
+
 export interface WorkerSlice {
-    twoOptWorker: WorkerState;
+    worker: WorkerState;
 }
 
 // Initial state object
 const initialWorkerSliceState: WorkerSlice = {
-    twoOptWorker: WorkerState.NOT_INITIALIZED,
+    worker: WorkerState.NOT_INITIALIZED,
 }
 
 // Slice creator
@@ -22,9 +22,9 @@ const slice = createSlice({
     name: 'workers',
     initialState: initialWorkerSliceState,
     reducers: {
-        setWorkerState: (state: WorkerSlice, action: PayloadAction<WorkerState>) =>({
+        setWorkerStopped: (state: WorkerSlice) =>({
             ...state,
-            [action.payload]: action.payload,
+            worker: WorkerState.STOPPED,
         }),
     },
 });
