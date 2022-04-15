@@ -19,8 +19,6 @@ const useWorkerInitializer = () => {
     const worker = new Worker("myworker.worker.js");
 
     worker.onmessage = (event) => {
-      console.log("event");
-      console.log(event);
       const { eventType }: EventData = event.data;
 
       if (
