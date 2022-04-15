@@ -15,6 +15,7 @@ const useWorkerInitializer = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("useEffect");
     const worker = new Worker("myworker.worker.js");
 
     worker.onmessage = (event) => {
