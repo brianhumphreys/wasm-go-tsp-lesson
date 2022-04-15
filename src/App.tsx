@@ -1,8 +1,11 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import useWorkerInitializer from "./hooks/useWorkerInitializer";
 
 const App = () => {
+  useWorkerInitializer();
+  
   return (
     <div className="App">
       <header className="App-header">
