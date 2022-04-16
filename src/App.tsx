@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import useWorkerInitializer from "./hooks/useWorkerInitializer";
+import useWorkerManager from "./hooks/useWorkerManager";
 
 const App = () => {
-  useWorkerInitializer();
-  
+
+  // call the manager to initialize worker logic
+  useWorkerManager();
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+
+        <button>
+
+        </button>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
