@@ -6,4 +6,6 @@ import "./index.css";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+// remove React.Strict
 root.render(<App />);
