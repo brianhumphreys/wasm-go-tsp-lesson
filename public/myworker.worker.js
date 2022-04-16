@@ -2,9 +2,9 @@ console.log("worker downloaded");
 
 
 // add the function to handle our task
-const add2 = (num) => {
+const add1 = (num) => {
     console.log('processing');
-    return num + 2;
+    return num + 1;
 }
 
 const initialize = () => {
@@ -16,19 +16,18 @@ const initialize = () => {
 self.onmessage = (event) => {
     const {eventData, eventType} = event.data;
 
-    console.log("worker");
-    console.log(event.data);
-
     if (eventType == "START_INITIALIZATION") {
+        console.log("worker received initialization event.")
         initialize();
         self.postMessage({ eventType: "INITIALIZED", })
     }
 
     
-    if (eventType == "START") {
-        const result = add2(eventData);
+    // if (eventType == "START") {
+    //     console.log("worker received a task with data: ", eventData);
+    //     const result = add1(eventData);
 
-        self.postMessage({ eventType: "FINISH", eventData: result });
-    }
+    //     self.postMessage({ eventType: "FINISH", eventData: result });
+    // }
     
 }
