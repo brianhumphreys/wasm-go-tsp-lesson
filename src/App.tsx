@@ -5,7 +5,6 @@ import useWorkerManager from "./hooks/useWorkerManager";
 
 const App = () => {
 
-  // call the manager to initialize worker logic
   useWorkerManager();
 
   return (

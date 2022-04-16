@@ -44,32 +44,32 @@ const useWorkerManager = () => {
       if (eventType == WorkerEventType.INITIALIZED) {
           console.log("received inialize-finished message from worker.  worker is now ready to process tasks.")
         // worker state is set to ready now
+        // TODO: NOTE DO NOT INCLUDE IN COMMENTS... note to reader that changeing state here causes a rerender in some
+        // versions of react...  we need a better way of keeping worker state.
         setWorkerState(WorkerState.READY);
+      } else if (eventType == WorkerEventType.FINISH) {
+        console.log("received task-finished message from worker.  worker is now ready to process another tasks.")
+        // set state to ready
+        setWorkerState(WorkerState.READY);
+        setTaskResult(eventData);
+      } else {
+        // something went wrong when initializing... terminate worker.
+        worker1.terminate();
       }
-    //   } else if (eventType == WorkerEventType.FINISH) {
-    //     console.log("received task-finished message from worker.  worker is now ready to process another tasks.")
-    //     // set state to ready
-    //     setWorkerState(WorkerState.READY);
-    //     // setTaskResult(eventData);
-    //   } else {
-    //     // something went wrong when initializing... terminate worker.
-    //     worker1.terminate();
-    //   }
     };
 
     // after setting the handler above, we can now pass the initialization message
-    console.log("WHAT");
     worker1.postMessage({
       eventType: WorkerEventType.START_INITIALIZATION,
     });
 
     // after some time when we know the worker is initialized... tell it to perform a task
-    // setTimeout(() => {
-    //     worker1.postMessage({
-    //         eventType: WorkerEventType.START,
-    //         eventData: 1
-    //       });
-    // }, 1000);
+    setTimeout(() => {
+        worker1.postMessage({
+            eventType: WorkerEventType.START,
+            eventData: 1
+          });
+    }, 1000);
   });
 };
 
