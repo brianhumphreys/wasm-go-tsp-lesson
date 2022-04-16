@@ -1,10 +1,10 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import useWorkerInitializer from "./hooks/useWorkerInitializer";
+import useWorkerManager from "./hooks/useWorkerManager";
 
 const App = () => {
-  useWorkerInitializer();
+  useWorkerManager();
   
   return (
     <div className="App">
