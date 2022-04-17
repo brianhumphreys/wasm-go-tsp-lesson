@@ -1,8 +1,4 @@
-console.log("worker downloaded");
-
-
 const add1 = (num) => {
-    console.log('processing');
     return num + 1;
 }
 
@@ -13,9 +9,6 @@ const initialize = () => {
 self.onmessage = (event) => {
     const {eventData, eventType} = event.data;
 
-    console.log("worker");
-    console.log(event.data);
-
     if (eventType == "START_INITIALIZATION") {
         initialize();
         self.postMessage({ eventType: "INITIALIZED", })
@@ -24,6 +17,8 @@ self.onmessage = (event) => {
     
     if (eventType == "START") {
         const result = add1(eventData);
+
+        console.log(`received event: ${eventData} + 1 = ${result}`);
 
         self.postMessage({ eventType: "FINISH", eventData: result });
     }

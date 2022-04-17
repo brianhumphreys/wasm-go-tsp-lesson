@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import logo from "./logo.svg";
+import React from "react";
 import "./App.css";
 import useWorkerManager from "./hooks/useWorkerManager";
+import logo from "./logo.svg";
 
 const App = () => {
 
   // call the manager to initialize worker logic
-  const taskResult = useWorkerManager();
+  const [taskResult, runWorker] = useWorkerManager();
 
   return (
     <div className="App">
@@ -14,6 +14,8 @@ const App = () => {
         <img src={logo} className="App-logo" alt="logo" />
 
         <p>{taskResult}</p>
+        {/* add button with our new runner function */}
+        <button onClick={() => runWorker()}>init worker</button>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
