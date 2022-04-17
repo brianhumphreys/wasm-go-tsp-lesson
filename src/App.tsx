@@ -6,16 +6,14 @@ import useWorkerManager from "./hooks/useWorkerManager";
 const App = () => {
 
   // call the manager to initialize worker logic
-  useWorkerManager();
+  const taskResult = useWorkerManager();
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
 
-        <button>
-
-        </button>
+        <p>{taskResult}</p>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
