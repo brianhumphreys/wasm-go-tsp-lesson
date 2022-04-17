@@ -76,7 +76,7 @@ class WorkerManager {
 
   // this `_run()` wrapper will check to see if the worker is in the correct state 
   // 'READY' before calling the actual `run()` method
-  async run<T, R = T>(work: T): Promise<null> {
+  async run<T, R = T>(work: T): Promise<null | R> {
     if (this.workerState == WorkerState.READY) {
       return this._run(work);
     } else {
