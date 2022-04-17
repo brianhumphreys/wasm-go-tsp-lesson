@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import WorkerManager, { WorkerState } from "../workers/WorkerManager";
+import WorkerManager from "../workers/WorkerManager";
 
-export interface CustomWindow {
-  nextStep: boolean;
-}
-
-declare let window: CustomWindow;
-
-// this hook will manage the worker instance and pass tasks to the worker
-// as well as handle the results of the worker processes
+// our manager hook is now much simplier and clean of any complicated logic that
+// is prone to rerenders and other react funkiness
 const useWorkerManager = () => {
-    // we can use the React-provided `setState()` hook to instanciate the worker class
-    // and to return a reference to the worker instance
+    // We will reference our new manager class now instead of the Worker class directly
   const [worker1] = useState(new WorkerManager("myworker.worker.js"));
 
   // useEffect will run once on app mount
