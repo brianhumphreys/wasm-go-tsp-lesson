@@ -5,8 +5,18 @@ import logo from "./logo.svg";
 
 const App = () => {
 
-  // call the manager to initialize worker logic
-  const [taskResult, runWorker] = useWorkerManager();
+  const [taskResult, runLongProcessOnWorkerThread] = useWorkerManager();
+
+  // simulate some large operation on main thread
+  const doLongProcessOnMainThread = () => {
+    console.log("starting process on main thread");
+    let count = 1;
+    for(let i = 0; i < 10_000_000_000; i++) {
+      //something
+      count++;
+    }
+    console.log("finished!");
+  }
 
   return (
     <div className="App">
@@ -15,7 +25,10 @@ const App = () => {
 
         <p>{taskResult}</p>
         {/* add button with our new runner function */}
-        <button className="Worker-button" onClick={() => runWorker()}>init worker</button>
+        <div className="Button-container">
+          <button className="Worker-button" onClick={() => runLongProcessOnWorkerThread()}>worker thread</button>
+          <button className="Worker-button" onClick={() => doLongProcessOnMainThread()}>main worker</button>
+        </div>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>

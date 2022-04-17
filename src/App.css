@@ -24,15 +24,20 @@
   color: white;
 }
 
-/* button css for worker button */
 .Worker-button {
   background-color: #61dafb;
   border: none;
   height: 2rem;
-  width: 6rem;
+  width: 8rem;
   text-align: center;
   border-radius: 2px;
   font-size: 16px;
+  margin: 8px;
+}
+
+.Button-container {
+  display: flex;
+  flex-direction: row;
 }
 
 .App-link {

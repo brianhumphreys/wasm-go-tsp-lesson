@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkerManager from "../workers/WorkerManager";
 
-// type the output now that the hook is getting slightly more compliated
 const useWorkerManager = (): [number | null, VoidFunction] => {
   const [worker1] = useState(new WorkerManager("myworker.worker.js"));
 
@@ -11,7 +10,6 @@ const useWorkerManager = (): [number | null, VoidFunction] => {
     worker1.initialize();
   });
 
-  // run worker
   const runWorker = () => {
     worker1
       .run<number, number>(Math.floor(Math.random() * 100)) // random input
