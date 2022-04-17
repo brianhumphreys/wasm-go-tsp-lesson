@@ -1,22 +1,13 @@
 import React from "react";
 import "./App.css";
+import Canvas from "./components/Canvas";
 import useWorkerManager from "./hooks/useWorkerManager";
 import logo from "./logo.svg";
+import { draw } from "./utilities/canvasUtils";
 
 const App = () => {
 
-  const [taskResult, runLongProcessOnWorkerThread] = useWorkerManager();
-
-  // simulate some large operation on main thread
-  const doLongProcessOnMainThread = () => {
-    console.log("starting process on main thread");
-    let count = 1;
-    for(let i = 0; i < 10_000_000_000; i++) {
-      //something
-      count++;
-    }
-    console.log("finished!");
-  }
+  const [taskResult, runTask] = useWorkerManager();
 
   return (
     <div className="App">
@@ -24,11 +15,11 @@ const App = () => {
         <img src={logo} className="App-logo" alt="logo" />
 
         <p>{taskResult}</p>
-        {/* add button with our new runner function */}
         <div className="Button-container">
-          <button className="Worker-button" onClick={() => runLongProcessOnWorkerThread()}>worker thread</button>
-          <button className="Worker-button" onClick={() => doLongProcessOnMainThread()}>main worker</button>
+          <button className="Worker-button" onClick={() => runTask()}>run</button>
         </div>
+        {/* add cusom canvas to app */}
+        <Canvas draw={draw} width="600" height="600"/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
