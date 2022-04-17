@@ -56,7 +56,7 @@ class WorkerManager {
     });
   }
 
-  async run<T, R = T>(work: T): Promise<null> {
+  async run<T, R = T>(work: T): Promise<null | R> {
     if (this.workerState == WorkerState.READY) {
       return this._run(work);
     } else {
