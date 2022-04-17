@@ -15,7 +15,7 @@ const App = () => {
 
         <p>{taskResult}</p>
         {/* add button with our new runner function */}
-        <button onClick={() => runWorker()}>init worker</button>
+        <button className="Worker-button" onClick={() => runWorker()}>init worker</button>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
