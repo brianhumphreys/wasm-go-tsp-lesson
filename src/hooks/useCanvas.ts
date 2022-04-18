@@ -1,5 +1,4 @@
 import { MutableRefObject, useCallback, useRef } from "react";
-import { clearCanvas } from "../utilities/canvasUtils";
 
 // let's add a type to states that the context is not null
 // since we are null checking and can guarantee that the
@@ -8,52 +7,54 @@ import { clearCanvas } from "../utilities/canvasUtils";
 // check in other areas of our code whenever we are using the
 // canvas or it's context.
 export interface MyCanvas {
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
-    canvasRef: MutableRefObject<HTMLCanvasElement | null>;
-  }
-  
-  // defined a type that describes a MyCanvas object or a null.  It might seem unintuitive
-  // to allow a null to be returned when we are attempting to get rid of
-  // the need to null check.  However, you will see in a second that
-  // now we will only need 1 null check instead of 2 which will clear up
-  // a couple lines of boring code in our other hooks.
-  export type UseCanvas = MyCanvas | null;
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+}
 
-  
 // move coloring logic, `draw()` out of this hook because
 // now we want this hook to mainly handle null checking the
 // canvas ref
-const useCanvas = (): [MutableRefObject<HTMLCanvasElement | null>, (node: HTMLCanvasElement | null) => void] => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+const useCanvas = (): [MutableRefObject<MyCanvas | null>, (node: HTMLCanvasElement | null) => void] => {
+  const canvasRef = useRef<MyCanvas | null>(null);
 
   // pass in the current node
-  const setCanvasRef = useCallback(
-    (node: HTMLCanvasElement | null) => {
-      // set canvasRef.current to the current node
-      // this is essentially a boiled down version of
-      // what useRef does under the hood in the react
-      // source code
-      canvasRef.current = node;
+  const setCanvasRef = useCallback((node: HTMLCanvasElement | null): void => {
+    // set canvasRef.current to the either and instance
+    // of MyCanvas or null depending on the value of the canvas
+    // element AKA: node, and also depending on the value of the canvas
+    // element's context.  If either are null then we will set canvasRef.current
+    // to null.  Now in other hooks and components, we must only check for one null
+    // instead of two...  You can decide if this is overkill or a nice-to-have :)
+    // Setting the current this is essentially a boiled down version of
+    // what useRef does under the hood in the react source code
 
-      const canvas = canvasRef.current;
-      if (canvas == null) {
-        return;
-      }
-      const context = canvas.getContext("2d");
-      if (context == null) {
-        return;
-      }
+    const canvas = node;
+    if (canvas == null) {
+        // if canvas is null, set current to null then return 
+        // @ts-ignore
+      canvasRef.current = null;
+      return;
+    }
+    const context = canvas.getContext("2d");
+    if (context == null) {
+        // if the context is null, set current to null then return
+        // @ts-ignore
+      canvasRef.current = null;
+      return;
+    }
 
-      // todo: get rid of my and put me in backgroundcolor hook
-      clearCanvas(context, canvas.width, canvas.height);
+    // canvas and context are populated, then set current to an
+    // instance of MyCanvas
+    const myCanvas: MyCanvas = {
+      canvas,
+      context,
+    };
+    // @ts-ignore
+    canvasRef.current = myCanvas;
 
-    }, []);
+  }, []);
 
-    
-
-    return [canvasRef, setCanvasRef];
+  return [canvasRef, setCanvasRef];
 };
-
 
 export default useCanvas;

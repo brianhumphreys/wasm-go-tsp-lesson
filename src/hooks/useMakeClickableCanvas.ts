@@ -11,7 +11,7 @@ import { MyCanvas } from "./useCanvas";
 
 // Change the input type
 const useMakeClickableCanvas = (
-  myCanvas: MyCanvas | null,
+  canvasRef: MutableRefObject<MyCanvas | null>,
   points: Pos[],
   setPoints: Dispatch<SetStateAction<Pos[]>>
 ) => {
@@ -20,6 +20,7 @@ const useMakeClickableCanvas = (
     // this is the only null check we need to do now and once doing
     // it, typescript allows us to freely use both the canvas element
     // and the context object without worry of null pointer exceptions.
+    const myCanvas = canvasRef.current
     if (myCanvas == null) {
       return;
     }
@@ -41,7 +42,7 @@ const useMakeClickableCanvas = (
       setPoints([...points, { x, y }]);
     };
     // add context and canvas to dependency array
-  }, [myCanvas?.canvas, myCanvas?.context, points]);
+  }, [canvasRef, points]);
 };
 
 export default useMakeClickableCanvas;

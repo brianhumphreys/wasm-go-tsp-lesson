@@ -1,15 +1,16 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, MutableRefObject, SetStateAction, useCallback } from "react";
 import { Pos } from "../types";
 import { clearCanvas, drawPoint, findPos } from "../utilities/canvasUtils";
 import { MyCanvas } from "./useCanvas";
 
 // change input type
 const useMakeRandomCanvas = (
-  myCanvas: MyCanvas | null,
+    canvasRef: MutableRefObject<MyCanvas | null>,
   setPoints: Dispatch<SetStateAction<Pos[]>>
 ): VoidFunction => {
   return useCallback(() => {
     // if null provide default callback
+    const myCanvas = canvasRef.current;
     if (myCanvas == null) {
       return;
     }
@@ -35,7 +36,7 @@ const useMakeRandomCanvas = (
     }
 
     setPoints(points);
-  }, [myCanvas?.canvas, myCanvas?.context, setPoints]);
+  }, [canvasRef, setPoints]);
 };
 
 export default useMakeRandomCanvas;

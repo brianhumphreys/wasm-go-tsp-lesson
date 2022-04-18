@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
+import useClearCanvas from "../hooks/useClearCanvas";
+import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
+import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -16,41 +19,27 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const { draw, ...rest } = props;
 
   const [points, setPoints] = useState<Pos[]>([]);
+  const [myCanvas, setCanvasRef] = useCanvas();
 
+  const clearCanvas = useClearCanvas(myCanvas, setPoints);
+  const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  // useEffect(() => {
-  //   console.log(points);
-  // }, [points.length]);
-
-    
-
-
-  const [canvasRef, setCanvasRef] = useCanvas();
-
-
-
-  useEffect(() => {
-    console.log("fuck: ", canvasRef);
-  }, [canvasRef]);
-
-  // add null check
-  // const [canvasRef, setCanvasRef] = useCanvasRefNullCheck(canvasRef);
-  useCanvasBackgroudColor(canvasRef);
-  // useMakeClickableCanvas(myCanvas, points, setPoints);
-  // const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
-  // const clearCanvas = useClearCanvas(myCanvas, setPoints);
+  useCanvasBackgroudColor(myCanvas);
+  useMakeClickableCanvas(myCanvas, points, setPoints);
+  
 
   return (
     <div>
       <div className="Button-container">
-        {/* <button className="Worker-button" onClick={() => getRandomButtons()}>
+        {/* short hand function calls for succinctness */}
+        <button className="Worker-button" onClick={getRandomButtons}>
           random
         </button>
-        <button className="Worker-button" onClick={() => clearCanvas()}>
+        <button className="Worker-button" onClick={clearCanvas}>
           clear
-        </button> */}
+        </button>
       </div>
-      <canvas ref={canvasRef} {...rest} />
+      <canvas ref={setCanvasRef} {...rest} />
     </div>
   );
 };
