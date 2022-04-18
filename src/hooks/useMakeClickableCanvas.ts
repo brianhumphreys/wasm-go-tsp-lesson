@@ -5,7 +5,7 @@ import { drawPoint, findPos } from "../utilities/canvasUtils";
 const useMakeClickableCanvas = (
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
 ) => {
-  //   const [points, setPoints] = useState<Pos[]>([]);
+  const [points, setPoints] = useState<Pos[]>([]);
 
   useEffect(() => {
     if (canvasRef == null || !canvasRef.current) {
@@ -27,12 +27,11 @@ const useMakeClickableCanvas = (
       const y = e.pageY - point.y;
 
       // then draw a point at that position
-      console.log(point);
       drawPoint(context, x, y);
 
       // add new point to state
-      //   setPoints([...points, point]);
-      //   console.log(points);
+      setPoints([...points, {x, y}]);
+      console.log(points);
     };
   }, [canvasRef]);
 };
