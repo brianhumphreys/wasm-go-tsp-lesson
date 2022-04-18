@@ -7,7 +7,7 @@ import { clearCanvas } from "./utilities/canvasUtils";
 
 const App = () => {
 
-  const [taskResult, runTask] = useWorkerManager();
+  // const [taskResult, runTask] = useWorkerManager();
 
   return (
     <div className="App">
