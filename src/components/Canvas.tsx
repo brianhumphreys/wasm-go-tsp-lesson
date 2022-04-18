@@ -4,7 +4,7 @@ import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useWorkerInvoker from "../hooks/useWorkerInvoker";
+import useNumberWorkerInvoker from "../hooks/useNumberWorkerInvoker";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -29,7 +29,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   // the worker.  This hook will return a callback that will act as 
   // our handler for the 'run' button.
-  const runWorker = useWorkerInvoker(points);
+  const runWorker = useNumberWorkerInvoker(37);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
