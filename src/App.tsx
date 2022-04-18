@@ -7,13 +7,10 @@ import { clearCanvas } from "./utilities/canvasUtils";
 
 const App = () => {
 
-  // const [taskResult, runTask] = useWorkerManager();
-
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {/* remove button from app level */}
         <Canvas draw={clearCanvas} width="600" height="600"/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
