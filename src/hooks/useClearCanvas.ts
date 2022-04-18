@@ -6,7 +6,7 @@ import { MyCanvas } from "./useCanvas";
 const useClearCanvas = (
   canvasRef: MutableRefObject<MyCanvas | null>,
   setPoints: Dispatch<SetStateAction<Pos[]>>
-) => {
+): Function => {
   return useCallback(() => {
     const myCanvas = canvasRef.current;
     if (myCanvas == null) {

@@ -24,7 +24,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  useCanvasBackgroudColor(myCanvas);
+  useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
   
 
@@ -35,7 +35,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
         <button className="Worker-button" onClick={getRandomButtons}>
           random
         </button>
-        <button className="Worker-button" onClick={clearCanvas}>
+        <button className="Worker-button" onClick={() => clearCanvas()}>
           clear
         </button>
       </div>
