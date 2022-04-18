@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Pos } from "../types";
 import useWorkerManager from "./useWorkerManager";
 
-const useWorkerInvoker = (points: Pos[]) => {
+const usePointsArrayWorkerInvoker = (points: Pos[]) => {
     // we want to keep the useWorker Manager Separate from 
     // the code that passes in the task data because we want the logic
     // to be separate from the data is passing to the worker.  We see here 
@@ -28,4 +28,4 @@ const useWorkerInvoker = (points: Pos[]) => {
 
 }
 
-export default useWorkerInvoker;
+export default usePointsArrayWorkerInvoker;
