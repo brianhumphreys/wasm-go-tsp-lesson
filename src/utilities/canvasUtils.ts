@@ -1,6 +1,6 @@
 import { Pos } from "../types";
 
-export const draw = (
+export const clearCanvas = (
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number
@@ -8,10 +8,6 @@ export const draw = (
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.fillStyle = "#FFFDD0";
   ctx.fillRect(0, 0, width, height);
-//   ctx.fillStyle = "#000000";
-//   ctx.beginPath();
-//   ctx.arc(50, 100, 20 * Math.sin(frameCount * 0.05) ** 2, 0, 2 * Math.PI);
-//   ctx.fill();
 };
 
 export const findPos = (obj: HTMLElement): Pos | undefined => {

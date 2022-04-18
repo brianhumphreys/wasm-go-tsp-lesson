@@ -3,7 +3,7 @@ import "./App.css";
 import Canvas from "./components/Canvas";
 import useWorkerManager from "./hooks/useWorkerManager";
 import logo from "./logo.svg";
-import { draw } from "./utilities/canvasUtils";
+import { clearCanvas } from "./utilities/canvasUtils";
 
 const App = () => {
 
@@ -13,13 +13,8 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-
-        <p>{taskResult}</p>
-        <div className="Button-container">
-          <button className="Worker-button" onClick={() => runTask()}>run</button>
-        </div>
-        {/* add cusom canvas to app */}
-        <Canvas draw={draw} width="600" height="600"/>
+        {/* remove button from app level */}
+        <Canvas draw={clearCanvas} width="600" height="600"/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>

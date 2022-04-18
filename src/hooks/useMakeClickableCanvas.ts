@@ -1,11 +1,12 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from "react";
 import { Pos } from "../types";
 import { drawPoint, findPos } from "../utilities/canvasUtils";
 
 const useMakeClickableCanvas = (
-  canvasRef: MutableRefObject<HTMLCanvasElement | null>
+  canvasRef: MutableRefObject<HTMLCanvasElement | null>,
+  points: Pos[],
+  setPoints: Dispatch<SetStateAction<Pos[]>>
 ) => {
-  const [points, setPoints] = useState<Pos[]>([]);
 
   useEffect(() => {
     if (canvasRef == null || !canvasRef.current) {
@@ -13,7 +14,6 @@ const useMakeClickableCanvas = (
     }
     const canvas = canvasRef.current;
     canvas.onclick = (e: MouseEvent) => {
-      // find position
       const point = findPos(canvas);
       if (!point) {
         return;
@@ -26,13 +26,9 @@ const useMakeClickableCanvas = (
       const x = e.pageX - point.x;
       const y = e.pageY - point.y;
 
-      // then draw a point at that position
       drawPoint(context, x, y);
-
-      // add new point to state
       setPoints([...points, {x, y}]);
     };
-    // we have to add points to the dependency array otherwise the array will not update
   }, [canvasRef, points]);
 };
 
