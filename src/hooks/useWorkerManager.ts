@@ -12,7 +12,7 @@ const useWorkerManager = (): [number | null, VoidFunction] => {
 
   const runWorker = () => {
     worker1
-      .run<number, number>(Math.floor(Math.random() * 100)) 
+      .run<number, number>(Math.floor(Math.random() * 100))
       .then((result: number | null) => setTaskResult(result));
   };
 

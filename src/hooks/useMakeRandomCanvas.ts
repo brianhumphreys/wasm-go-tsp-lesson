@@ -3,21 +3,15 @@ import { Pos } from "../types";
 import { clearCanvas, drawPoint, findPos } from "../utilities/canvasUtils";
 import { MyCanvas } from "./useCanvas";
 
-// change input type
 const useMakeRandomCanvas = (
-    canvasRef: MutableRefObject<MyCanvas | null>,
+  canvasRef: MutableRefObject<MyCanvas | null>,
   setPoints: Dispatch<SetStateAction<Pos[]>>
 ): VoidFunction => {
   return useCallback(() => {
-    // if null provide default callback
     const myCanvas = canvasRef.current;
     if (myCanvas == null) {
       return;
     }
-    // no more null checking context
-    // if (canvasRef == null || !canvasRef.current) {
-    //   return;
-    // }
     const canvas = myCanvas.canvas;
     const context = myCanvas.context;
 
