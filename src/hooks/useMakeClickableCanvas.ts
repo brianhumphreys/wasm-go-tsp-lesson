@@ -13,6 +13,7 @@ const useMakeClickableCanvas = (
       return;
     }
     const canvas = canvasRef.current;
+
     canvas.onclick = (e: MouseEvent) => {
       const point = findPos(canvas);
       if (!point) {
