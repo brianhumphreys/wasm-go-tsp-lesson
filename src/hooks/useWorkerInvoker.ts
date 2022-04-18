@@ -18,7 +18,7 @@ const useWorkerInvoker = (points: Pos[]) => {
     // both the input and output of the worker task will be Pos[] so we can 
     // just say <Pos[]>  
     useEffect(() => {
-        console.log('result!!!');
+        console.log('result!!!!');
         console.log(taskResult);
     }, [taskResult])
     return useCallback(() => {
