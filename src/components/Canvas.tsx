@@ -21,7 +21,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   // for testing purposes, let's print out the points array state
   // whenever a point is added or whenever the array is cleared so that
-  // we know our state logic is working correctly/
+  // we know our state logic is working correctly -> SCREENSHOT CONSOLE
   useEffect(() => {
     
     console.log(points);
