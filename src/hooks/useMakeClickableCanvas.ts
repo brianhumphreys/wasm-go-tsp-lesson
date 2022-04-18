@@ -31,9 +31,9 @@ const useMakeClickableCanvas = (
 
       // add new point to state
       setPoints([...points, {x, y}]);
-      console.log(points);
     };
-  }, [canvasRef]);
+    // we have to add points to the dependency array otherwise the array will not update
+  }, [canvasRef, points]);
 };
 
 export default useMakeClickableCanvas;
