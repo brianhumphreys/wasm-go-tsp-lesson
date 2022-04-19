@@ -6,7 +6,7 @@ import { Pos } from "../types";
 // first we want to change the name from useWorkerInvoker to
 // useNumberWorkerInvoker because we will be passing a number
 // back and forth between our worker to get warmed up.
-const useWorkerInvoker = (points: Pos[]) => {
+const useWorkerInvoker = (points: Pos[], cb: Function) => {
 
 }
 
