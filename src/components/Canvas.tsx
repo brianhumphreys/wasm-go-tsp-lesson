@@ -4,7 +4,7 @@ import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useStringWorkerInvoker from "../hooks/useStringWorkerInvoker";
+import useVertexDistanceWorkerInvoker from "../hooks/useVertexDistanceWorkerInvoker";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -25,10 +25,8 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  // add the hook that handles the point array tasks and passes them to 
-  // the worker.  This hook will return a callback that will act as 
-  // our handler for the 'run' button.
-  const runWorker = useStringWorkerInvoker("coder", console.log);
+  // pythag triangle should output '5'
+  const runWorker = useVertexDistanceWorkerInvoker([{x: 10, y: 10}, {x: 14, y: 13}], console.log);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);

@@ -30,7 +30,7 @@
   
     if (eventType == "START") {
       console.log("worker input: ", eventData);
-      const result = self.global.Hello(eventData)
+      const result = self.global.Distance(eventData)
       console.log("worker output: ", result)
       self.postMessage({ eventType: "FINISH", eventData: result });
     }
