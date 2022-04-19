@@ -1,13 +1,3 @@
-const doLongProcessOnMainThread = () => {
-    console.log("starting process on worker thread");
-    let count = 1;
-    for(let i = 0; i < 10_000_000_000; i++) {
-      //something
-      count++;
-    }
-    console.log("finished!");
-  }
-
 const initialize = () => {
     console.log('initializing worker');
 }
@@ -21,8 +11,10 @@ self.onmessage = (event) => {
     }
 
     if (eventType == "START") {
-        doLongProcessOnMainThread();
-        self.postMessage({ eventType: "FINISH", eventData: null });
+        // quick print to verify that data was passed to worker
+        console.log('data passed to worker!');
+        console.log(eventData);
+        self.postMessage({ eventType: "FINISH", eventData });
     }
     
 }

@@ -57,6 +57,7 @@ class WorkerManager {
   }
 
   async run<T, R = T>(work: T): Promise<null | R> {
+    console.log('its running');
     if (this.workerState == WorkerState.READY) {
       return this._run(work);
     } else {
