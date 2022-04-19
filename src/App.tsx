@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
 import useNumberWorkerInvoker from "./hooks/useNumberWorkerInvoker";
-import useWorkerManager from "./hooks/useWorkerManager";
 import logo from "./logo.svg";
 
 const App = () => {
 
-  const runNumberTask = useNumberWorkerInvoker(17);
+  // provide input and the callback for the output
+  const runNumberTask = useNumberWorkerInvoker(17, console.log);
 
   return (
     <div className="App">

@@ -1,23 +1,20 @@
 import { useEffect, useState } from "react";
 import WorkerManager from "../workers/WorkerManager";
 
-const useWorkerManager = <T, R = T>(): ((taskData: T) => Promise<R | null>) => {
+// defined a callback that we can pass in when the worker passes back a result.
+// perhaps we want to update the UI with the result.  If so, we can update a ref
+// in the callback with the task result
+const useWorkerManager = <T, R = T>(cb: (taskResult: R | null) => void): ((taskData: T) => void) => {
   const [worker1] = useState(new WorkerManager("myworker.worker.js"));
-
-  // no more need to update a task result
 
   useEffect(() => {
     worker1.initialize();
   });
 
-  const runWorker = (taskData: T): Promise<R | null> => {
-    // instead of updating the taskResult state, just return a promise
-    // from the callback that resolves the task result
-    return new Promise<R | null>((resolve) => {
-      worker1.run<T, R>(taskData).then((taskResult: R | null) => {
-        resolve(taskResult);
-      });
-    });
+  const runWorker = (taskData: T): void => {
+    // instead of updating the taskResult state, just invoke the provided
+    // callback whenever the promise resolves
+    worker1.run<T, R>(taskData).then(cb);
   };
 
   return runWorker;

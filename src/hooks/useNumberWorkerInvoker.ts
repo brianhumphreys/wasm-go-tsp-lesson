@@ -1,13 +1,13 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import useWorkerManager from "./useWorkerManager";
 
-const useNumberWorkerInvoker = (input: number) => {
-    const runWorker = useWorkerManager<number>();
- 
-    // no more need to listen to the taskResult since it will resolve
-    // in the promise
+// parameters are the input for the task and the call back that will be invoked with the
+// output
+const useNumberWorkerInvoker = (input: number, cb: (output: number | null) => void) => {
+    const runNumberWorker = useWorkerManager<number>(cb);
+
     return useCallback(() => {
-        runWorker(input).then(console.log);
+        runNumberWorker(input);
     }, [input]);
 }
 
