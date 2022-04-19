@@ -1,17 +1,37 @@
 importScripts("/wasm_exec.js");
 
-const go = new Go();
-WebAssembly.instantiateStreaming(
-    fetch("./gomodule.wasm"),
-    go.importObject
-  ).then((result) => {
-      console.log("faclk")
-      go.run(result.instance);
-      const output = self.global.add3(3);
 
-      console.log("worker output: ", output);
-      
-  });
+// https://blog.suborbital.dev/foundations-wasm-in-golang-is-fantastic
+const go = new Go();
+if (!WebAssembly.instantiateStreaming) { 
+  WebAssembly.instantiateStreaming = async (resp, importObject) => {
+      const source = await (await resp).arrayBuffer()
+      const result = await WebAssembly.instantiate(source, importObject)
+      console.log()
+  }
+}
+function loadWasm(path) {
+  const go = new Go()
+
+  return new Promise((resolve, reject) => {
+    WebAssembly.instantiateStreaming(fetch(path), go.importObject)
+    .then(result => {
+      go.run(result.instance)
+      resolve(result.instance)
+    })
+    .catch(error => {
+      reject(error)
+    })
+  })
+}
+
+loadWasm("./gomodule.wasm").then(wasm => {
+  console.log("gomodule.wasm is loaded 👋")
+  // const output = self.global.add3(3);
+  // console.log("worker output: ", output);
+}).catch(error => {
+  console.log("ouch", error)
+}) 
 
 const initialize = (cb) => {
   console.log("initializing worker");

@@ -2,36 +2,37 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"syscall/js"
 )
 
-func add3(input int) int {
+// func add3(input int) int {
 
-	return input + 3
-}
+// 	return input + 3
+// }
 
-func add3Wrapper() js.Func {
-	add3Function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if len(args) != 1 {
-			return "Invalid number of arguments passed.  Expecting 1."
-		}
+// func add3Wrapper() js.Func {
+// 	add3Function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+// 		if len(args) != 1 {
+// 			return "Invalid number of arguments passed.  Expecting 1."
+// 		}
 
-		input := args[0].Index(0).Int()
+// 		input := args[0].Index(0).Int()
 
-		fmt.Printf("wasm input: %d\n", input))
+// 		fmt.Printf("wasm input: %d\n", input))
 
-		result := add3(input)
+// 		result := add3(input)
 
-		fmt.Printf("wasm output: %d\n", result))
+// 		fmt.Printf("wasm output: %d\n", result))
 
-		return result
-	})
-	return add3Function
-}
+// 		return result
+// 	})
+// 	return add3Function
+// }
 
 func main() {
 
-	js.Global().Set("add3", add3Wrapper())
-	<-make(chan bool)
+	// js.Global().Set("add3", add3Wrapper())
+	// <-make(chan bool)
+	fmt.Println("👋 Hello World 🌍")
+    // Prevent the function from returning, which is required in a wasm module
+    <-make(chan bool)
 }
