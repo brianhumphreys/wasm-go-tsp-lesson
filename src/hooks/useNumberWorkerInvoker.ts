@@ -6,7 +6,7 @@
 // useNumberWorkerInvoker because we will be passing a number
 // back and forth between our worker to get warmed up.
 
-const useNumberWorkerInvoker = (input: number) => {
+const useNumberWorkerInvoker = (input: number, cb: Function) => {
 
 }
 
