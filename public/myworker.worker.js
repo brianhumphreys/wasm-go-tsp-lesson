@@ -7,7 +7,7 @@ const initialize = (cb) => {
   // after fetching the wasm script, we need to instanciate the go module and then
   // fetch our transpiled go script
   const go = new Go();
-  WebAssembly.instantiateStreaming(fetch("../test.wasm"), go.importObject).then(
+  WebAssembly.instantiateStreaming(fetch("../gomodule.wasm"), go.importObject).then(
     (result) => {
       console.log("finished loading Go script");
       cb();
