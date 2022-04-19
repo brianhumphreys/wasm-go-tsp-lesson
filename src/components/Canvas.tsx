@@ -26,7 +26,6 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
-  
 
   return (
     <div>
