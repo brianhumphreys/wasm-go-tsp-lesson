@@ -35,14 +35,7 @@
       // print out the input to verify that we are correctly passing
       // our data to the worker thread
       console.log("worker input: ", eventData);
-  
-      console.log(self.global);
-      // invoke golang method
-      const result = self.global.add3(eventData);
-  
-      console.log("worker output: ", result);
-  
       // pass the result back to the main thread
-      self.postMessage({ eventType: "FINISH", eventData: result });
+      self.postMessage({ eventType: "FINISH", eventData, });
     }
   };
