@@ -20,11 +20,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npm run compile-go && react-scripts start",
+    "start": "npm run compile-go && npm run cp-worker && npm run cp-exec && react-scripts start",
     "build": "npm run compile-go && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "compile-go": "cd wasm_modules && GOOS=js GOARCH=wasm go build -o ../public/gomodule.wasm"
+    "compile-go": "cd wasm_modules && GOOS=js GOARCH=wasm go build -o ../public/gomodule.wasm",
+    "cp-worker": "cp ./src/workers/myworker.worker.js ./public",
+    "cp-exec": "cp ./src/wasm_modules/wasm_exec.js ./public"
   },
   "eslintConfig": {
     "extends": [

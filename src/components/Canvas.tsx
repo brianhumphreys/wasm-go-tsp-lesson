@@ -25,9 +25,6 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  useEffect(() => {
-    console.log('fujc');
-  })
   // add the hook that handles the point array tasks and passes them to 
   // the worker.  This hook will return a callback that will act as 
   // our handler for the 'run' button.
