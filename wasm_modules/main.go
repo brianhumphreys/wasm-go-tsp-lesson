@@ -13,6 +13,7 @@ type Vertex struct {
 
 func distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
+	fmt.Println("go working")
 	return math.Pow(math.Pow(vertex1.x-vertex2.x, 2)+math.Pow(vertex1.y-vertex2.y, 2), 0.5)
 }
 

@@ -1,13 +1,11 @@
 import React from "react";
 import "./App.css";
 import Canvas from "./components/Canvas";
-import useWorkerManager from "./hooks/useWorkerManager";
 import logo from "./logo.svg";
 import { clearCanvas } from "./utilities/canvasUtils";
 
 const App = () => {
 
-  // const [taskResult, runTask] = useWorkerManager();
 
   return (
     <div className="App">

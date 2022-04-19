@@ -26,13 +26,15 @@ self.onmessage = (event) => {
   }
 
   if (eventType == "START") {
-    // print out the points array to verify that we are correctly passing
+    // print out the input to verify that we are correctly passing
     // our data to the worker thread
     console.log("worker!!!");
     console.log(eventData);
 
-    // pass the points array back to verify that we are correctly returning
-    // data from the worker thread back to the main thread
-    self.postMessage({ eventType: "FINISH", eventData });
+    // invoke golang method
+    const result = self.global.add3(eventData)
+
+    // pass the result back to the main thread
+    self.postMessage({ eventType: "FINISH", eventData: result });
   }
 };
