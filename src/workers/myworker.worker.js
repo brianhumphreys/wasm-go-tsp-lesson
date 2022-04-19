@@ -25,17 +25,13 @@
     const { eventData, eventType } = event.data;
   
     if (eventType == "START_INITIALIZATION") {
-      // since the initialization is async because we fetch go scripts,
-      // lets pass the postMessage function as a call back that invoked once
-      // init is finished
       initialize(() => self.postMessage({ eventType: "INITIALIZED" }));
     }
   
     if (eventType == "START") {
-      // print out the input to verify that we are correctly passing
-      // our data to the worker thread
       console.log("worker input: ", eventData);
-      // pass the result back to the main thread
-      self.postMessage({ eventType: "FINISH", eventData, });
+      const result = self.global.Hello(eventData)
+      console.log("worker output: ", result)
+      self.postMessage({ eventType: "FINISH", eventData: result });
     }
   };

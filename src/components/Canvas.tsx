@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useNumberWorkerInvoker from "../hooks/useNumberWorkerInvoker";
+import useStringWorkerInvoker from "../hooks/useStringWorkerInvoker";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -28,7 +28,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   // add the hook that handles the point array tasks and passes them to 
   // the worker.  This hook will return a callback that will act as 
   // our handler for the 'run' button.
-  const runWorker = useNumberWorkerInvoker(17, console.log);
+  const runWorker = useStringWorkerInvoker("coder", console.log);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);

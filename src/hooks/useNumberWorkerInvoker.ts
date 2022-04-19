@@ -5,10 +5,7 @@ const useNumberWorkerInvoker = (input: number, cb: (output: number | null) => vo
     const runWorker = useWorkerManager<number, number>(cb);
 
     return useCallback(() => {
-        console.log('calling');
         runWorker(input);
-        // since runWorker can change based on the initialization status of the WorkerManager
-        // object, we must now update this invoker callback when runWorker() updates
     }, [input, runWorker]);
 
 
