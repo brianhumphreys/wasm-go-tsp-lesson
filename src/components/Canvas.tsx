@@ -29,7 +29,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   // add the hook that handles the point array tasks and passes them to 
   // the worker.  This hook will return a callback that will act as 
   // our handler for the 'run' button.
-  const runWorker = usePointsArrayWorkerInvoker(points);
+  const runWorker = usePointsArrayWorkerInvoker(points, console.log);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);

@@ -20,8 +20,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run compile-go && react-scripts start",
+    "build": "npm run compile-go && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile-go": "cd wasm_modules && GOOS=js GOARCH=wasm go build -o ../public/gomodule.wasm"
