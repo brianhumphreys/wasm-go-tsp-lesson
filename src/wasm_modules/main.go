@@ -87,10 +87,10 @@ func twoOptWrapper() js.Func {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
 		startPath := jsValueToVertexArray(args)
-		fmt.Printf("Start Cost: %f\n", Cost(startPath))
+		fmt.Printf("Start Cost: %f\n", CostWithPrint(startPath))
 		fmt.Println(DuplicateVertices(startPath))
 		endTour := StartTwoOptLoop(startPath, 100)
-		fmt.Printf("End Cost: %f\n", Cost(endTour.vertices))
+		fmt.Printf("End Cost: %f\n", CostWithPrint(endTour.vertices))
 		fmt.Println(DuplicateVertices(endTour.vertices))
 		return vertexArrayToInterfaceMap(endTour.vertices)
 	})
@@ -120,6 +120,24 @@ func jsValueToVertexArray(args []js.Value) []Vertex {
 	}
 
 	return resultArray
+}
+
+func CostWithPrint(vertices []Vertex) float64 {
+	fmt.Printf("Cost function\n")
+	total := 0.0
+	for i := 1; i < len(vertices); i++ {
+		fmt.Print(vertices[i-1])
+		fmt.Print("->")
+		fmt.Print(vertices[i])
+		fmt.Print(" : ")
+		total += Distance(vertices[i-1], vertices[i])
+	}
+	fmt.Print(vertices[len(vertices)-1])
+	fmt.Print("->")
+	fmt.Print(vertices[0])
+	fmt.Print(" : ")
+	total += Distance(vertices[len(vertices)-1], vertices[0])
+	return total
 }
 
 func Cost(vertices []Vertex) float64 {
