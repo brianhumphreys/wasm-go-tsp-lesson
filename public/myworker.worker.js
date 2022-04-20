@@ -38,7 +38,7 @@
   
     if (eventType == "START") {
       console.log("worker input: ", eventData);
-      const result = self.global.Distance(createWasmArray(eventData));
+      const result = self.global.Cost(createWasmArray(eventData));
       console.log("worker output: ", result)
       self.postMessage({ eventType: "FINISH", eventData: result });
     }

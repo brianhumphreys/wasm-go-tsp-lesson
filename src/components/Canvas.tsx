@@ -4,7 +4,7 @@ import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useVertexDistanceWorkerInvoker from "../hooks/useVertexDistanceWorkerInvoker";
+import useTourCostWorkerInvoker from "../hooks/useTourCostWorkerInvoker";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -25,8 +25,8 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  // pythag triangle should output '5'
-  const runWorker = useVertexDistanceWorkerInvoker([{x: 10, y: 10}, {x: 14, y: 13}], console.log);
+  // change the name
+  const runWorker = useTourCostWorkerInvoker([{x: 10, y: 10}, {x: 14, y: 13}], console.log);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);

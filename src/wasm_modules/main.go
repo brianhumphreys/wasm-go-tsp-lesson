@@ -11,7 +11,6 @@ type Vertex struct {
 	y float64
 }
 
-// convert our array map to an actual go array
 func jsValueToVertexArray(args []js.Value) []Vertex {
 	length := args[0].Get("length").Int()
 
@@ -27,6 +26,30 @@ func jsValueToVertexArray(args []js.Value) []Vertex {
 	return resultArray
 }
 
+func cost(vertices []Vertex) float64 {
+	total := 0.0
+	for i := 1; i < len(vertices); i++ {
+		total += Distance(vertices[i-1], vertices[i])
+	}
+	fmt.Println("total")
+	fmt.Println(total)
+	total += Distance(vertices[len(vertices)-1], vertices[0])
+	fmt.Println(total)
+	return total
+}
+
+func costWrapper() js.Func {
+	costFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+
+		return cost(jsValueToVertexArray(args))
+	})
+
+	return costFunction
+}
+
 func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
 	return math.Pow(math.Pow(vertex1.x-vertex2.x, 2)+math.Pow(vertex1.y-vertex2.y, 2), 0.5)
@@ -38,10 +61,8 @@ func distanceWrapper() js.Func {
 			return "Invalid number of arguments passed.  Expecting 2."
 		}
 
-		// convert js value array to vertex array
 		vertexArray := jsValueToVertexArray(args)
 
-		// pass the two vertices into the distance function and return result
 		return Distance(vertexArray[0], vertexArray[1])
 	})
 	return distanceFunc
@@ -49,7 +70,7 @@ func distanceWrapper() js.Func {
 
 
 func main() {
-  fmt.Println("👋 Hello World 🌍")
-  js.Global().Set("Distance", distanceWrapper()) // set the function
+  js.Global().Set("Distance", distanceWrapper()) 
+  js.Global().Set("Cost", costWrapper()) // set the function
     <-make(chan bool)
 }
