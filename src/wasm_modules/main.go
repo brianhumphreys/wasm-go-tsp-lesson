@@ -31,13 +31,16 @@ func cost(vertices []Vertex) float64 {
 	for i := 1; i < len(vertices); i++ {
 		total += Distance(vertices[i-1], vertices[i])
 	}
-	fmt.Println("total")
-	fmt.Println(total)
 	total += Distance(vertices[len(vertices)-1], vertices[0])
-	fmt.Println(total)
 	return total
 }
 
+
+// we see that with how this function is currently implemented, if we do not select
+// any points and invoke the worker, then the go module crashes.  This is because 
+// our algorithm can't handle an array of length 0.  We will add this safe guard in later 
+// but for now, just refresh the page if this happens, select some points on the canvas
+// and click 'run'
 func costWrapper() js.Func {
 	costFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) != 1 {

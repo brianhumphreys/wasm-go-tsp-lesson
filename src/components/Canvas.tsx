@@ -25,8 +25,8 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  // change the name
-  const runWorker = useTourCostWorkerInvoker([{x: 10, y: 10}, {x: 14, y: 13}], console.log);
+  // replace static array with points array
+  const runWorker = useTourCostWorkerInvoker(points, console.log);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
@@ -35,7 +35,6 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   return (
     <div>
       <div className="Button-container">
-        {/* short hand function calls for succinctness */}
         <button className="Worker-button" onClick={getRandomButtons}>
           random
         </button>
