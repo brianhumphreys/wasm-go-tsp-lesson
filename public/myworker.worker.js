@@ -19,7 +19,7 @@
   // convert our array to a map with index values as the keys and the array values 
   // as the corrosponding map values.  We include a 'length' property so go 
   // module knows how long the map-formatted array is 
-  const createWasmArray = (array) => {
+  const jsArrayToWasmArray = (array) => {
     const arrayMap = {};
     for (let i =  0; i < array.length; i++) {
         arrayMap[`${i}`] = array[i];
@@ -37,7 +37,7 @@
     }
   
     if (eventType == "START") {
-      const result = self.global.TwoOpt(createWasmArray(eventData));
+      const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
       self.postMessage({ eventType: "FINISH", eventData: result });
     }
   };

@@ -5,7 +5,7 @@ import useClearCanvas from "../hooks/useClearCanvas";
 import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useTourCostWorkerInvoker from "../hooks/useTourCostWorkerInvoker";
+import useTwoOptTourWorkerInvoker from "../hooks/useTwoOptTourWorkerInvoker";
 import { Pos } from "../types";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -26,8 +26,11 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
 
-  // replace static array with points array
-  const runWorker = useTourCostWorkerInvoker(points, console.log);
+  // instead of our callback being simply a print funciton,
+  // let's give it our state update function so that when twoOpt
+  // finishes, our canvas will automatically update with the new
+  // path lines
+  const runWorker = useTwoOptTourWorkerInvoker(points, setPoints);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
