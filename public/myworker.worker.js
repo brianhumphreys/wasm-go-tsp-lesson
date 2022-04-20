@@ -34,6 +34,7 @@ const wasmArrayToJsArray = (arrayMap) => {
   return array;
 };
 
+// print out points array to see if issue is in worker
 const printPointArray = (points) => {
   points.forEach(point => {
     console.log(`x: ${point.x}, y: ${point.y}`)
