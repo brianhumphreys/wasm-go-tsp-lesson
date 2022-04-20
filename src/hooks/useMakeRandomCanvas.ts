@@ -25,7 +25,11 @@ const useMakeRandomCanvas = (
     for (let i = 0; i < 100; i++) {
       const x = Math.floor(Math.random() * canvas.width);
       const y = Math.floor(Math.random() * canvas.width);
-      drawPoint(context, x, y);
+      // we want to keep drawing all in the same component
+      // we will keep this hook for managing state of 
+      // selected points and contain drawing in a single 
+      // hook
+      // drawPoint(myCanvas.context, x, y);
       points.push({ x, y });
     }
 

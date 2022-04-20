@@ -27,7 +27,11 @@ const useMakeClickableCanvas = (
       const x = e.pageX - point.x;
       const y = e.pageY - point.y;
 
-      drawPoint(myCanvas.context, x, y);
+      // we want to keep drawing all in the same component
+      // we will keep this hook for managing state of 
+      // selected points and contain drawing in a single 
+      // hook
+      // drawPoint(myCanvas.context, x, y);
       setPoints([...points, { x, y }]);
     };
   }, [canvasRef, points]);

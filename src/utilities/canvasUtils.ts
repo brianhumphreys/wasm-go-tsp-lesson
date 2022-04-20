@@ -34,3 +34,5 @@ export const drawPoint = (
   ctx.arc(xCenter, yCenter, 5, 0, 2 * Math.PI);
   ctx.fill();
 };
+
+
