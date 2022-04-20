@@ -3,11 +3,6 @@
   const initialize = (cb) => {
     console.log("initializing worker");
   
-    // adds initialization code.  We need to add wasm_exec.js to our public folder
-    // importScripts("/wasm_exec.js");
-  
-    // // after fetching the wasm script, we need to instanciate the go module and then
-    // // fetch our transpiled go script
     importScripts("/wasm_exec.js");
 
     const go = new Go();
@@ -21,6 +16,19 @@
       });
   };
 
+  // convert our array to a map with index values as the keys and the array values 
+  // as the corrosponding map values.  We include a 'length' property so go 
+  // module knows how long the map-formatted array is 
+  const createWasmArray = (array) => {
+    const arrayMap = {};
+    for (let i =  0; i < array.length; i++) {
+        arrayMap[`${i}`] = array[i];
+    }
+    arrayMap['length'] = array.length;
+    console.log(arrayMap);
+    return arrayMap;
+}
+
   self.onmessage = (event) => {
     const { eventData, eventType } = event.data;
   
@@ -30,7 +38,7 @@
   
     if (eventType == "START") {
       console.log("worker input: ", eventData);
-      const result = self.global.Distance(eventData)
+      const result = self.global.Distance(createWasmArray(eventData));
       console.log("worker output: ", result)
       self.postMessage({ eventType: "FINISH", eventData: result });
     }
