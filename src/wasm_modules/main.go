@@ -87,7 +87,11 @@ func twoOptWrapper() js.Func {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
 		startPath := jsValueToVertexArray(args)
+		fmt.Printf("Start Cost: %f\n", Cost(startPath))
+		fmt.Println(DuplicateVertices(startPath))
 		endTour := StartTwoOptLoop(startPath, 100)
+		fmt.Printf("End Cost: %f\n", Cost(endTour.vertices))
+		fmt.Println(DuplicateVertices(endTour.vertices))
 		return vertexArrayToInterfaceMap(endTour.vertices)
 	})
 	return twoOptFunction
