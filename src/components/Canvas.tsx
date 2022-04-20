@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
+import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
 import useTourCostWorkerInvoker from "../hooks/useTourCostWorkerInvoker";
@@ -30,6 +31,8 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
+
+  useConnectCanvasPoints(myCanvas, points);
   
 
   return (
