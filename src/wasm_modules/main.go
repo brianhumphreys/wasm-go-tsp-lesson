@@ -11,6 +11,98 @@ type Vertex struct {
 	y float64
 }
 
+type Tour struct {
+	vertices []Vertex
+	cost     float64
+}
+
+func TwoOptLoop(bestTour Tour, maxIteration int, currentIteration int) Tour {
+	if currentIteration >= maxIteration {
+		return bestTour
+	}
+	currentIteration++
+	newTour := TwoOpt(bestTour)
+
+	// fmt.Printf("Running... Iteration: %d\n", currentIteration)
+	fmt.Printf("Running... Iteration: %d, Current cost: %f, Best cost: %f, Best path: %v\n", currentIteration, math.Floor(newTour.cost), math.Floor(bestTour.cost), bestTour.vertices)
+
+	if newTour.cost < bestTour.cost {
+		bestTour = newTour
+	} else {
+		maxIteration = currentIteration
+	}
+
+	return TwoOptLoop(bestTour, maxIteration, currentIteration)
+}
+
+func Reverse(vertices []Vertex, start int, end int) []Vertex {
+	for ; start < end; start, end = start+1, end-1 {
+		vertices[start], vertices[end] = vertices[end], vertices[start]
+	}
+	return vertices
+}
+
+func DuplicateVertices(vertices []Vertex) []Vertex {
+	a := make([]Vertex, len(vertices))
+	copy(a, vertices)
+	return a
+}
+
+func StartTwoOptLoop(vertices []Vertex, maxIteration int) Tour {
+	startCost := Cost(vertices)
+	currentTour := Tour{vertices: vertices, cost: startCost}
+	startTour := Tour{vertices: DuplicateVertices(currentTour.vertices), cost: currentTour.cost}
+	currentIteration := 0
+
+	bestTour := TwoOptLoop(startTour, maxIteration, currentIteration)
+
+	fmt.Printf("Made %d Iterations, started with cost: %f, ended with cost: %f, ended with path: %v\n", currentIteration, math.Floor(startCost), math.Floor(bestTour.cost), bestTour.vertices)
+
+	return bestTour
+}
+
+func TwoOpt(currentTour Tour) Tour {
+	numberOfCities := len(currentTour.vertices)
+	bestTour := Tour{vertices: DuplicateVertices(currentTour.vertices), cost: currentTour.cost}
+	for i := 0; i < numberOfCities-1; i++ {
+		for j := i + 1; j < numberOfCities; j++ {
+			if j-i == 0 {
+				continue
+			}
+			swap := Reverse(currentTour.vertices, i, j)
+
+			newTour := Tour{vertices: swap, cost: Cost(swap)}
+
+			if newTour.cost < bestTour.cost {
+				bestTour = Tour{vertices: DuplicateVertices(newTour.vertices), cost: newTour.cost}
+			}
+		}
+	}
+	return bestTour
+}
+
+func twoOptWrapper() js.Func {
+	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+		startPath := jsValueToVertexArray(args)
+		endTour := StartTwoOptLoop(startPath, 100)
+		return vertexArrayToInterfaceMap(endTour.vertices)
+	})
+	return twoOptFunction
+}
+
+func vertexArrayToInterfaceMap(vertices []Vertex) map[string]interface{} {
+	resultArray := map[string]interface{}{
+		"length": len(vertices),
+	}
+	for i := 0; i < len(vertices); i++ {
+		resultArray[fmt.Sprintf("%d", i)] = map[string]interface{}{"x": vertices[i].x, "y": vertices[i].y}
+	}
+	return resultArray
+}
+
 func jsValueToVertexArray(args []js.Value) []Vertex {
 	length := args[0].Get("length").Int()
 
@@ -26,7 +118,7 @@ func jsValueToVertexArray(args []js.Value) []Vertex {
 	return resultArray
 }
 
-func cost(vertices []Vertex) float64 {
+func Cost(vertices []Vertex) float64 {
 	total := 0.0
 	for i := 1; i < len(vertices); i++ {
 		total += Distance(vertices[i-1], vertices[i])
@@ -35,19 +127,13 @@ func cost(vertices []Vertex) float64 {
 	return total
 }
 
-
-// we see that with how this function is currently implemented, if we do not select
-// any points and invoke the worker, then the go module crashes.  This is because 
-// our algorithm can't handle an array of length 0.  We will add this safe guard in later 
-// but for now, just refresh the page if this happens, select some points on the canvas
-// and click 'run'
 func costWrapper() js.Func {
 	costFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
 
-		return cost(jsValueToVertexArray(args))
+		return Cost(jsValueToVertexArray(args))
 	})
 
 	return costFunction
@@ -75,5 +161,6 @@ func distanceWrapper() js.Func {
 func main() {
   js.Global().Set("Distance", distanceWrapper()) 
   js.Global().Set("Cost", costWrapper()) // set the function
+  js.Global().Set("TwoOpt", twoOptWrapper()) // set the function
     <-make(chan bool)
 }

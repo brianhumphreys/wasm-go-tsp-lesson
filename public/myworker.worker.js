@@ -37,9 +37,7 @@
     }
   
     if (eventType == "START") {
-      console.log("worker input: ", eventData);
-      const result = self.global.Cost(createWasmArray(eventData));
-      console.log("worker output: ", result)
+      const result = self.global.TwoOpt(createWasmArray(eventData));
       self.postMessage({ eventType: "FINISH", eventData: result });
     }
   };
