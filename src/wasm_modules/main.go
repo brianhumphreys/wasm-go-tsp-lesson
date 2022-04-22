@@ -51,6 +51,8 @@ func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) j
 }
 
 func PathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
+	fmt.Println("dist matrix")
+	// fmt.Println(distanceMatrix)
 	total := 0.0
 	for i := 0; i < len(path) - 1; i++ {
 		total += distanceMatrix[path[i]][path[i + 1]]
@@ -66,9 +68,7 @@ func pathCostWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
 		}
 		startPath := jsValueToVertexArray(args[0])
 
-		PathCost(distanceMatrix, startPath)
-
-		return 8
+		return PathCost(distanceMatrix, startPath)
 	})
 	return twoOptFunction
 }
@@ -87,7 +87,7 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 			if after < before {
 				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
 				newBestDistance = PathCost(distanceMatrix, newBestRoute)
-				fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
+				// fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
 			}
 		}
 
@@ -105,11 +105,11 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 			if after < before {
 				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
 				newBestDistance = PathCost(distanceMatrix, newBestRoute)
-				fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
+				// fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
 			}
 		}
 	}
-	fmt.Printf("New Iteration: New cost: %f\n", newBestDistance)
+	// fmt.Printf("New Iteration: New cost: %f\n", newBestDistance)
 	return newBestDistance, newBestRoute
 }
 
@@ -118,18 +118,10 @@ func iterateTwoOptWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func 
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
-		fmt.Println("in go")
 
-		// change the array conversion function type to accept the vertex array map directly
 		startPath := jsValueToVertexArray(args[0].Get("vertices"))
-		// now let's also ge the distance from the input
 		startDistance := float64(args[0].Get("distance").Int())
-		fmt.Println(startPath)
-		// fmt.Println(startDistance)
 
-		// distanceMatrix := createDistanceMatrix(startPath)
-
-		// handle situation when path is 1 or 0 points long
 		if len(startPath) == 0 || len(startPath) == 1 {
 			return vertexArrayToInterfaceMap(startPath) 
 		}

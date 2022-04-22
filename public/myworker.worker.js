@@ -51,22 +51,44 @@ self.onmessage = (event) => {
     console.log(eventData);
 
     self.global.DistMat(eventData);
-    // let's get the initial cost from in the worker since the iterate
-    // function will require it
-    const initialCost = self.global.PathCost(eventData);
+    let bestRoute = eventData;
+    let bestDistance = self.global.PathCost(eventData);
 
-    // create the tour object in a WASM friendly format
-    const wasmTour = {
-      vertices: jsArrayToWasmArray(eventData),
-      distance: initialCost,
+    // now we loop inside out worker based off of the improvement factor
+    // instead of in go module
+    // This allows us to take snap shot of the routes between iterations
+    // in order to send them back to our canvas for intermediate updates
+    let improvementFactor = 1.0;
+	  const improvementThreshold = 0.01;
+
+    while(improvementFactor > improvementThreshold) {
+      const previousDistance = bestDistance;
+
+      const wasmTour = {
+        vertices: jsArrayToWasmArray(bestRoute),
+        distance: bestDistance,
+      }
+      const {vertices, distance} = self.global.IterateTwoOpt(wasmTour);
+
+      bestRoute = vertices;
+      bestDistance = distance;
+
+
+      console.log('previous distance: ', previousDistance);
+
+      console.log('best Distance: ', bestDistance);
+      // get improvement factor
+      improvementFactor = 1 - bestDistance / previousDistance
+  
+      console.log("improvementFactor: ", improvementFactor)
+      // we will see that this does not thing after the first loop because our promise 
+      // in the worker manager hook has resolved.
+      console.log('hello1');
+      self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(bestRoute) });
+      console.log('hello2');
     }
-    console.log('in worker');
-    console.log(wasmTour);
-    // change function to iterate
-    const result = self.global.IterateTwoOpt(wasmTour);
-    // const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
-    console.log(result)
-    // in
-    self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result["vertices"]) });
+    
+    // this won't do anything either
+    self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(bestRoute) });
   }
 };
