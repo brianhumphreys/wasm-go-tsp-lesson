@@ -49,8 +49,24 @@ self.onmessage = (event) => {
 
   if (eventType == "START") {
     console.log(eventData);
+
+  //   const bestRoute = initialPath
+	// bestDistance := pathCost(distanceMatrix, bestRoute)
+	// improvementFactor := 1.0
+	// improvementThreshold := 0.01
+
+	// iteration := 1
+	
+	// for improvementFactor > improvementThreshold {
+	// 	previousBest := bestDistance
+	// 	improvementFactor = 1 - bestDistance / previousBest
+	// }
+
+    console.log('dist mat');
+    self.global.DistMat(eventData);
     const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
     console.log(result);
     self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result) });
+    // self.postMessage({ eventType: "FINISH", eventData: result });
   }
 };
