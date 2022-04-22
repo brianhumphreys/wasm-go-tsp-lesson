@@ -15,17 +15,9 @@ const useWorkerManager = <T, R = T>(
   }, [worker]);
 
 
-  // instead of calling .then() on a promise,
-  // we now need to call .subscribe() on the observable.
-  // the interface bewteen promises and observables is
-  // strikingly similar, except of course the fact that
-  // observables can emit multiple values across time and
-  // promises can only emit one
   return useCallback(
     (taskData: T): void => {
-      !!worker && worker.run<T, R>(taskData).subscribe((result) => {
-        cb(result);
-      });
+      !!worker && worker.run<T, R>(taskData).subscribe(cb);
     },
     [worker]
   );

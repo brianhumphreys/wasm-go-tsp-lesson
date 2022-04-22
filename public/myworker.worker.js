@@ -8,7 +8,7 @@ const initialize = (cb) => {
     fetch("./gomodule.wasm"),
     go.importObject
   ).then((result) => {
-    console.log("loaded");
+    console.log("loaded wasm");
     go.run(result.instance);
     cb();
   });
@@ -23,9 +23,6 @@ const jsArrayToWasmArray = (array) => {
   return arrayMap;
 };
 
-// function to convert was array map back to
-// a js array which is the type we need for
-// our setPoints state manager function
 const wasmArrayToJsArray = (arrayMap) => {
   const array = [];
   for (let i = 0; i < arrayMap.length; i++) {
@@ -48,12 +45,21 @@ self.onmessage = (event) => {
   }
 
   if (eventType == "START") {
+
+
+    // if there is only 1 or no data points, the distance will always be 0
+    if (eventData.length < 2) {
+      self.postMessage({ eventType: "FINISH", eventData });
+      return;
+    }
+    
     self.global.DistMat(eventData);
     let bestRoute = eventData;
     let bestDistance = self.global.PathCost(eventData);
 
     let improvementFactor = 1.0;
-	  const improvementThreshold = 0.01;
+    // lets lower the improvement threshold
+	  const improvementThreshold = 0;
 
     while(improvementFactor > improvementThreshold) {
       const previousDistance = bestDistance;

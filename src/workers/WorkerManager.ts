@@ -61,10 +61,6 @@ class WorkerManager {
   }
 
 
-  // we need to turn our promise runner into an observable
-  // so that we can get a constant stream of messages instead
-  // of just esolving after one message.  RxJS is the perfect
-  // for these requirements
   run<T, R = T>(work: T): Observable<null | R> {
     if (this.workerState == WorkerState.READY) {
       return this._run(work);
@@ -73,9 +69,6 @@ class WorkerManager {
     }
   }
 
-  // return an observable that can be subscribed to
-  // and that will emit the results of each iteration
-  // in the 2opt algorithm
   _run<T, R = T>(work: T): Observable<R> {
     return new Observable<R>((subscriber) => {
       this.workerInstance.onmessage = (event) => {
@@ -88,7 +81,6 @@ class WorkerManager {
         } else if (eventType == WorkerEventType.ITERATE) {
           subscriber.next(eventData);
         } else {
-          // we should have added this a long time ago
           this.setWorkerState(WorkerState.TERMINATED);
           this.workerInstance.terminate();
           subscriber.error("something happend in the worker.");
