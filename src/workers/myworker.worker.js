@@ -48,16 +48,10 @@ self.onmessage = (event) => {
   }
 
   if (eventType == "START") {
-    console.log(eventData);
-
     self.global.DistMat(eventData);
     let bestRoute = eventData;
     let bestDistance = self.global.PathCost(eventData);
 
-    // now we loop inside out worker based off of the improvement factor
-    // instead of in go module
-    // This allows us to take snap shot of the routes between iterations
-    // in order to send them back to our canvas for intermediate updates
     let improvementFactor = 1.0;
 	  const improvementThreshold = 0.01;
 
@@ -73,22 +67,12 @@ self.onmessage = (event) => {
       bestRoute = vertices;
       bestDistance = distance;
 
-
-      console.log('previous distance: ', previousDistance);
-
-      console.log('best Distance: ', bestDistance);
-      // get improvement factor
       improvementFactor = 1 - bestDistance / previousDistance
   
       console.log("improvementFactor: ", improvementFactor)
-      // we will see that this does not thing after the first loop because our promise 
-      // in the worker manager hook has resolved.
-      console.log('hello1');
-      self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(bestRoute) });
-      console.log('hello2');
+      self.postMessage({ eventType: "ITERATE", eventData: wasmArrayToJsArray(bestRoute) });
     }
     
-    // this won't do anything either
     self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(bestRoute) });
   }
 };

@@ -51,8 +51,6 @@ func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) j
 }
 
 func PathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
-	fmt.Println("dist matrix")
-	// fmt.Println(distanceMatrix)
 	total := 0.0
 	for i := 0; i < len(path) - 1; i++ {
 		total += distanceMatrix[path[i]][path[i + 1]]

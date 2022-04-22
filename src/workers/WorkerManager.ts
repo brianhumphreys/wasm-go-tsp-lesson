@@ -1,5 +1,9 @@
+import { Observable, of } from "rxjs";
+
+// Add the ITERATE type
 export enum WorkerEventType {
   INITIALIZED = "INITIALIZED", 
+  ITERATE = "ITERATE", 
   START_INITIALIZATION = "START_INITIALIZATION", 
   FINISH = "FINISH", 
   START = "START", 
@@ -56,25 +60,38 @@ class WorkerManager {
     });
   }
 
-  async run<T, R = T>(work: T): Promise<null | R> {
+
+  // we need to turn our promise runner into an observable
+  // so that we can get a constant stream of messages instead
+  // of just esolving after one message.  RxJS is the perfect
+  // for these requirements
+  run<T, R = T>(work: T): Observable<null | R> {
     if (this.workerState == WorkerState.READY) {
       return this._run(work);
     } else {
-      return Promise.resolve(null);
+      return of(null);
     }
   }
 
-  async _run<T, R = T>(work: T): Promise<R> {
-    return new Promise<R>((resolve, reject) => {
+  // return an observable that can be subscribed to
+  // and that will emit the results of each iteration
+  // in the 2opt algorithm
+  _run<T, R = T>(work: T): Observable<R> {
+    return new Observable<R>((subscriber) => {
       this.workerInstance.onmessage = (event) => {
         const { eventType, eventData }: EventData<R> = event.data;
 
         if (eventType == WorkerEventType.FINISH) {
           this.setWorkerState(WorkerState.READY);
-          resolve(eventData);
+          subscriber.next(eventData);
+          subscriber.complete();
+        } else if (eventType == WorkerEventType.ITERATE) {
+          subscriber.next(eventData);
         } else {
+          // we should have added this a long time ago
+          this.setWorkerState(WorkerState.TERMINATED);
           this.workerInstance.terminate();
-          reject();
+          subscriber.error("something happend in the worker.");
         }
       };
 
@@ -85,7 +102,29 @@ class WorkerManager {
 
       this.setWorkerState(WorkerState.RUNNING);
       this.workerInstance.postMessage(event);
-    });
+    })
+    
+    // ((resolve, reject) => {
+      // this.workerInstance.onmessage = (event) => {
+      //   const { eventType, eventData }: EventData<R> = event.data;
+
+      //   if (eventType == WorkerEventType.FINISH) {
+      //     this.setWorkerState(WorkerState.READY);
+      //     resolve(eventData);
+      //   } else {
+      //     this.workerInstance.terminate();
+      //     reject();
+      //   }
+      // };
+
+      // const event: EventData<T> = {
+      //   eventType: WorkerEventType.START,
+      //   eventData: work,
+      // };
+
+      // this.setWorkerState(WorkerState.RUNNING);
+      // this.workerInstance.postMessage(event);
+    // });
   }
 
   setWorkerState(newState: WorkerState) {
