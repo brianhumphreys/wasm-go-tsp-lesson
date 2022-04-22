@@ -112,6 +112,11 @@ func twoOptWrapper() js.Func {
 		}
 		startPath := jsValueToVertexArray(args)
 		distanceMatrix := createDistanceMatrix(startPath)
+
+		// handle situation when path is 1 or 0 points long
+		if len(startPath) == 0 || len(startPath) == 1 {
+			return vertexArrayToInterfaceMap(startPath) 
+		}
 		bestPath := otherTwoOpt(startPath, distanceMatrix)
 		return vertexArrayToInterfaceMap(bestPath)
 	})
