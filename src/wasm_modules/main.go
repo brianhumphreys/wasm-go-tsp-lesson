@@ -73,6 +73,7 @@ func pathCostWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
 func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) (float64, []Vertex) {
 	newBestDistance := bestDistance
 	newBestRoute := bestRoute
+	
 	for swapFirst := 1; swapFirst < len(bestRoute) - 2; swapFirst++ {
 		for swapLast := swapFirst + 1; swapLast < len(bestRoute) - 1; swapLast++ {
 			beforeStart := newBestRoute[swapFirst - 1]
@@ -168,12 +169,9 @@ func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
 
 func main() {
-	// create global state that we pass to our function creators.  we want to keep
-	// state of the distance matrix so we can keep reference to it between iteration
-	// updates.
 	distanceMatrix := map[Vertex]map[Vertex]float64{}
-  js.Global().Set("IterateTwoOpt", iterateTwoOptWrapper(distanceMatrix)) // set the function
-  js.Global().Set("PathCost", pathCostWrapper(distanceMatrix)) // set the function
-  js.Global().Set("DistMat", createDistanceMatrixWrapper(distanceMatrix)) // set the function
+  js.Global().Set("IterateTwoOpt", iterateTwoOptWrapper(distanceMatrix))
+  js.Global().Set("PathCost", pathCostWrapper(distanceMatrix))
+  js.Global().Set("DistMat", createDistanceMatrixWrapper(distanceMatrix))
     <-make(chan bool)
 }

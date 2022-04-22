@@ -102,29 +102,7 @@ class WorkerManager {
 
       this.setWorkerState(WorkerState.RUNNING);
       this.workerInstance.postMessage(event);
-    })
-    
-    // ((resolve, reject) => {
-      // this.workerInstance.onmessage = (event) => {
-      //   const { eventType, eventData }: EventData<R> = event.data;
-
-      //   if (eventType == WorkerEventType.FINISH) {
-      //     this.setWorkerState(WorkerState.READY);
-      //     resolve(eventData);
-      //   } else {
-      //     this.workerInstance.terminate();
-      //     reject();
-      //   }
-      // };
-
-      // const event: EventData<T> = {
-      //   eventType: WorkerEventType.START,
-      //   eventData: work,
-      // };
-
-      // this.setWorkerState(WorkerState.RUNNING);
-      // this.workerInstance.postMessage(event);
-    // });
+    })    
   }
 
   setWorkerState(newState: WorkerState) {
