@@ -62,6 +62,8 @@ self.onmessage = (event) => {
 	// 	improvementFactor = 1 - bestDistance / previousBest
 	// }
 
+
+    // we now have to create the distance matrix and store it in a global context in the go module
     console.log('dist mat');
     self.global.DistMat(eventData);
     const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
