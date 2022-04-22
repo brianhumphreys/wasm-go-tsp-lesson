@@ -48,12 +48,9 @@ self.onmessage = (event) => {
   }
 
   if (eventType == "START") {
-    console.log("worker input");
-    printPointArray(eventData);
+    console.log(eventData);
     const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
-    const convertedResult = wasmArrayToJsArray(result);
-    console.log("worker output");
-    printPointArray(convertedResult);
-    self.postMessage({ eventType: "FINISH", eventData: convertedResult });
+    console.log(result);
+    self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result) });
   }
 };

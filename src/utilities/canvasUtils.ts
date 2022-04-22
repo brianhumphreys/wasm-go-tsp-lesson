@@ -27,12 +27,17 @@ export const findPos = (obj: HTMLElement): Pos | undefined => {
 export const drawPoint = (
   ctx: CanvasRenderingContext2D,
   xCenter: number,
-  yCenter: number
+  yCenter: number,
+  color?: string,
 ) => {
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = color ? color : "#000000";
   ctx.beginPath();
   ctx.arc(xCenter, yCenter, 5, 0, 2 * Math.PI);
   ctx.fill();
+
+  ctx.font = "10px Arial";
+  ctx.fillStyle = "#ff0000";
+  ctx.fillText(`(${xCenter}, ${yCenter})`, xCenter + 5, yCenter + 5);
 };
 
 

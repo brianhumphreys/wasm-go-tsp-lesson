@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
 import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
+import useMouseMovePosition from "../hooks/useMouseMovePosition";
 import useTwoOptTourWorkerInvoker from "../hooks/useTwoOptTourWorkerInvoker";
 import { Pos } from "../types";
 
@@ -25,17 +26,15 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
-
-  // instead of our callback being simply a print funciton,
-  // let's give it our state update function so that when twoOpt
-  // finishes, our canvas will automatically update with the new
-  // path lines
   const runWorker = useTwoOptTourWorkerInvoker(points, setPoints);
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
-
   useConnectCanvasPoints(myCanvas, points);
+
+  // debugging
+  const debugOutput = useRef<HTMLSpanElement | null>(null);
+  useMouseMovePosition(myCanvas, debugOutput)
   
 
   return (
@@ -50,7 +49,10 @@ const Canvas: React.FC<OurCanvas> = (props) => {
         <button className="Worker-button" onClick={() => runWorker()}>
           run
         </button>
+        <span ref={debugOutput}></span>
       </div>
+      
+      
       <canvas ref={setCanvasRef} {...rest} />
     </div>
   );

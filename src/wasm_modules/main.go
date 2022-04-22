@@ -16,6 +16,76 @@ type Tour struct {
 	cost     float64
 }
 
+func createDistanceMatrix(points []Vertex) map[Vertex]map[Vertex]float64 {
+	d := make(map[Vertex]map[Vertex]float64)
+    for i := range points {
+        d[points[i]] = make(map[Vertex]float64)
+    }
+
+	for i := 0; i < len(points); i++ {
+		for j := i; j < len(points); j++ {
+			if j == i {
+				d[points[j]][points[i]] = 0
+			} else {
+				dist := Distance(points[i], points[j])
+				d[points[j]][points[i]] = dist
+				d[points[i]][points[j]] = dist
+			}
+		}
+	}
+	return d
+}
+
+func pathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
+	total := 0.0
+	for i := 0; i < len(path) - 1; i++ {
+		total += distanceMatrix[path[i]][path[i + 1]]
+	}
+	total += distanceMatrix[path[len(path) - 1]][path[0]]
+	return total
+}
+
+func otherTwoOpt(initialPath []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) []Vertex {
+	bestRoute := initialPath
+	bestDistance := pathCost(distanceMatrix, bestRoute)
+	improvementFactor := 1.0
+	improvementThreshold := 0.01
+
+	iteration := 1
+	fmt.Println(bestRoute)
+	for improvementFactor > improvementThreshold {
+		fmt.Println("+++++++++++++++++++++++++++++++")
+		previousBest := bestDistance
+		for swapFirst := 1; swapFirst < len(initialPath) - 2; swapFirst++ {
+			for swapLast := swapFirst + 1; swapLast < len(initialPath) - 1; swapLast++ {
+				beforeStart := bestRoute[swapFirst - 1]
+				start := bestRoute[swapFirst]
+				end := bestRoute[swapLast]
+				afterEnd := bestRoute[swapLast+1]
+				before := distanceMatrix[beforeStart][start] + distanceMatrix[end][afterEnd]
+				after := distanceMatrix[beforeStart][end] + distanceMatrix[start][afterEnd]
+				fmt.Printf("+++ Switching %v->%v with %v->%v\n", beforeStart, start, end, afterEnd)
+				fmt.Printf("Before: %f, After: %f\n", before, after)
+				if after < before {
+					bestRoute = Reverse(bestRoute, swapFirst, swapLast)
+					bestDistance = pathCost(distanceMatrix, bestRoute)
+					fmt.Printf("Improved Iteration: %d, Current cost: %f, Best cost: %f, Best path: %v\n", iteration, previousBest, bestDistance, bestRoute)
+				}
+			}
+
+
+		}
+		iteration++
+		// improvement_factor = 1 - self.best_distance/previous_best
+		improvementFactor = 1 - bestDistance / previousBest
+
+		fmt.Println("factor: ", improvementFactor)
+		fmt.Println("threshold: ", improvementThreshold)
+	}
+
+	return bestRoute
+}
+
 func TwoOptLoop(bestTour Tour, maxIteration int, currentIteration int) Tour {
 	if currentIteration >= maxIteration {
 		return bestTour
@@ -23,16 +93,17 @@ func TwoOptLoop(bestTour Tour, maxIteration int, currentIteration int) Tour {
 	currentIteration++
 	newTour := TwoOpt(bestTour)
 
-	// fmt.Printf("Running... Iteration: %d\n", currentIteration)
 	fmt.Printf("Running... Iteration: %d, Current cost: %f, Best cost: %f, Best path: %v\n", currentIteration, math.Floor(newTour.cost), math.Floor(bestTour.cost), bestTour.vertices)
 
-	if newTour.cost < bestTour.cost {
-		bestTour = newTour
-	} else {
+	// if you reset the input parameter to a new value and pass that in to the recurse branch
+	// you're gunna have a bad time m'kay
+	if newTour.cost >= bestTour.cost {
 		maxIteration = currentIteration
-	}
+	} 
 
-	return TwoOptLoop(bestTour, maxIteration, currentIteration)
+	recursiveResult := TwoOptLoop(newTour, maxIteration, currentIteration)
+
+	return recursiveResult
 }
 
 func Reverse(vertices []Vertex, start int, end int) []Vertex {
@@ -56,8 +127,6 @@ func StartTwoOptLoop(vertices []Vertex, maxIteration int) Tour {
 
 	bestTour := TwoOptLoop(startTour, maxIteration, currentIteration)
 
-	fmt.Printf("Made %d Iterations, started with cost: %f, ended with cost: %f, ended with path: %v\n", currentIteration, math.Floor(startCost), math.Floor(bestTour.cost), bestTour.vertices)
-
 	return bestTour
 }
 
@@ -71,10 +140,10 @@ func TwoOpt(currentTour Tour) Tour {
 			}
 			swap := Reverse(currentTour.vertices, i, j)
 
-			newTour := Tour{vertices: swap, cost: Cost(swap)}
+			newTour := Tour{vertices: DuplicateVertices(swap), cost: Cost(swap)}
 
 			if newTour.cost < bestTour.cost {
-				bestTour = Tour{vertices: DuplicateVertices(newTour.vertices), cost: newTour.cost}
+				bestTour = newTour
 			}
 		}
 	}
@@ -86,13 +155,15 @@ func twoOptWrapper() js.Func {
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
+		fmt.Println(1)
 		startPath := jsValueToVertexArray(args)
-		fmt.Printf("Start Cost: %f\n", CostWithPrint(startPath))
-		fmt.Println(DuplicateVertices(startPath))
-		endTour := StartTwoOptLoop(startPath, 100)
-		fmt.Printf("End Cost: %f\n", CostWithPrint(endTour.vertices))
-		fmt.Println(DuplicateVertices(endTour.vertices))
-		return vertexArrayToInterfaceMap(endTour.vertices)
+		fmt.Println(startPath)
+		distanceMatrix := createDistanceMatrix(startPath)
+		// fmt.Println(distanceMatrix)
+		bestPath := otherTwoOpt(startPath, distanceMatrix)
+		fmt.Println(bestPath)
+		// endTour := StartTwoOptLoop(startPath, 100)
+		return vertexArrayToInterfaceMap(bestPath)
 	})
 	return twoOptFunction
 }

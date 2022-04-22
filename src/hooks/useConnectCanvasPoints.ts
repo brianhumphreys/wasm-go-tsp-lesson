@@ -26,11 +26,16 @@ const useConnectCanvasPoints = (
     }
 
     // starting position
-    drawPoint(context, points[0].x, points[0].y);
+    
+    drawPoint(context, points[0].x, points[0].y, "#ff0000");
 
     for (let i = 1; i < points.length; i++) {
       // intermediate positions
-      drawPoint(context, points[i].x, points[i].y);
+      if (i == 1) {
+          drawPoint(context, points[i].x, points[i].y, '#00ff00');
+      } else {
+        drawPoint(context, points[i].x, points[i].y);
+      }
     }
 
     // if there is only on point or no points
@@ -50,6 +55,7 @@ const useConnectCanvasPoints = (
     // end position
     context.lineTo(points[0].x, points[0].y);
     context.stroke();
+
   }, [canvasRef, hashListOfPoints(points)]);
 };
 
