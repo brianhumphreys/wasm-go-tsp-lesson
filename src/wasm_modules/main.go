@@ -16,6 +16,7 @@ type Tour struct {
 	cost     float64
 }
 
+
 // set global distance matrix instead of passing new matrix as result
 func createDistanceMatrixSetter(points []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) {
     for i := range points {
@@ -40,7 +41,7 @@ func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) j
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
-		startPath := jsValueToVertexArray(args)
+		startPath := jsValueToVertexArray(args[0])
 
 		createDistanceMatrixSetter(startPath, distanceMatrix)
 
@@ -49,13 +50,27 @@ func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) j
 	return twoOptFunction
 }
 
-func pathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
+func PathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
 	total := 0.0
 	for i := 0; i < len(path) - 1; i++ {
 		total += distanceMatrix[path[i]][path[i + 1]]
 	}
 	total += distanceMatrix[path[len(path) - 1]][path[0]]
 	return total
+}
+
+func pathCostWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
+	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+		startPath := jsValueToVertexArray(args[0])
+
+		PathCost(distanceMatrix, startPath)
+
+		return 8
+	})
+	return twoOptFunction
 }
 
 func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) (float64, []Vertex) {
@@ -71,7 +86,7 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 			after := distanceMatrix[beforeStart][end] + distanceMatrix[start][afterEnd]
 			if after < before {
 				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
-				newBestDistance = pathCost(distanceMatrix, newBestRoute)
+				newBestDistance = PathCost(distanceMatrix, newBestRoute)
 				fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
 			}
 		}
@@ -89,7 +104,7 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 			after := distanceMatrix[beforeStart][end] + distanceMatrix[start][afterEnd]
 			if after < before {
 				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
-				newBestDistance = pathCost(distanceMatrix, newBestRoute)
+				newBestDistance = PathCost(distanceMatrix, newBestRoute)
 				fmt.Printf("Improved Iteration: New cost: %f\n", newBestDistance)
 			}
 		}
@@ -98,9 +113,38 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 	return newBestDistance, newBestRoute
 }
 
+func iterateTwoOptWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
+	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+		fmt.Println("in go")
+
+		// change the array conversion function type to accept the vertex array map directly
+		startPath := jsValueToVertexArray(args[0].Get("vertices"))
+		// now let's also ge the distance from the input
+		startDistance := float64(args[0].Get("distance").Int())
+		fmt.Println(startPath)
+		// fmt.Println(startDistance)
+
+		// distanceMatrix := createDistanceMatrix(startPath)
+
+		// handle situation when path is 1 or 0 points long
+		if len(startPath) == 0 || len(startPath) == 1 {
+			return vertexArrayToInterfaceMap(startPath) 
+		}
+		bestDistance, bestPath := iterateTwoOpt(startDistance, startPath, distanceMatrix)
+		return map[string]interface{}{
+			"vertices": vertexArrayToInterfaceMap(bestPath),
+			"distance": bestDistance,
+		}
+	})
+	return twoOptFunction
+}
+
 func otherTwoOpt(initialPath []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) []Vertex {
 	bestRoute := initialPath
-	bestDistance := pathCost(distanceMatrix, bestRoute)
+	bestDistance := PathCost(distanceMatrix, bestRoute)
 	improvementFactor := 1.0
 	improvementThreshold := 0.01
 
@@ -127,7 +171,7 @@ func twoOptWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
-		startPath := jsValueToVertexArray(args)
+		startPath := jsValueToVertexArray(args[0])
 		// distanceMatrix := createDistanceMatrix(startPath)
 
 		// handle situation when path is 1 or 0 points long
@@ -150,15 +194,16 @@ func vertexArrayToInterfaceMap(vertices []Vertex) map[string]interface{} {
 	return resultArray
 }
 
-func jsValueToVertexArray(args []js.Value) []Vertex {
-	length := args[0].Get("length").Int()
+func jsValueToVertexArray(vertices js.Value) []Vertex {
+
+	length := vertices.Get("length").Int()
 
 	resultArray := make([]Vertex, length)
 
 	for i := 0; i < length; i++ {
 		index := fmt.Sprintf("%d", i)
-		x := float64(args[0].Get(index).Get("x").Int())
-		y := float64(args[0].Get(index).Get("y").Int())
+		x := float64(vertices.Get(index).Get("x").Int())
+		y := float64(vertices.Get(index).Get("y").Int())
 		resultArray[i] = Vertex{x: x, y: y}
 	}
 
@@ -177,6 +222,8 @@ func main() {
 	// updates.
 	distanceMatrix := map[Vertex]map[Vertex]float64{}
   js.Global().Set("TwoOpt", twoOptWrapper(distanceMatrix)) // set the function
+  js.Global().Set("IterateTwoOpt", iterateTwoOptWrapper(distanceMatrix)) // set the function
+  js.Global().Set("PathCost", pathCostWrapper(distanceMatrix)) // set the function
   js.Global().Set("DistMat", createDistanceMatrixWrapper(distanceMatrix)) // set the function
     <-make(chan bool)
 }

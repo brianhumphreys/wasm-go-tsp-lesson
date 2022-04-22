@@ -50,23 +50,23 @@ self.onmessage = (event) => {
   if (eventType == "START") {
     console.log(eventData);
 
-  //   const bestRoute = initialPath
-	// bestDistance := pathCost(distanceMatrix, bestRoute)
-	// improvementFactor := 1.0
-	// improvementThreshold := 0.01
-
-	// iteration := 1
-	
-	// for improvementFactor > improvementThreshold {
-	// 	previousBest := bestDistance
-	// 	improvementFactor = 1 - bestDistance / previousBest
-	// }
-
-    console.log('dist mat');
     self.global.DistMat(eventData);
-    const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
-    console.log(result);
-    self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result) });
-    // self.postMessage({ eventType: "FINISH", eventData: result });
+    // let's get the initial cost from in the worker since the iterate
+    // function will require it
+    const initialCost = self.global.PathCost(eventData);
+
+    // create the tour object in a WASM friendly format
+    const wasmTour = {
+      vertices: jsArrayToWasmArray(eventData),
+      distance: initialCost,
+    }
+    console.log('in worker');
+    console.log(wasmTour);
+    // change function to iterate
+    const result = self.global.IterateTwoOpt(wasmTour);
+    // const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
+    console.log(result)
+    // in
+    self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result["vertices"]) });
   }
 };
