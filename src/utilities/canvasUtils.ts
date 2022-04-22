@@ -35,9 +35,10 @@ export const drawPoint = (
   ctx.arc(xCenter, yCenter, 5, 0, 2 * Math.PI);
   ctx.fill();
 
-  ctx.font = "10px Arial";
-  ctx.fillStyle = "#ff0000";
-  ctx.fillText(`(${xCenter}, ${yCenter})`, xCenter + 5, yCenter + 5);
+  // print coordinates next to points
+  // ctx.font = "10px Arial";
+  // ctx.fillStyle = "#ff0000";
+  // ctx.fillText(`(${xCenter}, ${yCenter})`, xCenter + 5, yCenter + 5);
 };
 
 

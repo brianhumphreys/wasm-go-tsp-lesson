@@ -9,8 +9,6 @@ const useConnectCanvasPoints = (
   points: Pos[]
 ) => {
   useEffect(() => {
-    // check that the canvas and it's context
-    // are rendered to the DOM
     const myCanvas = canvasRef.current;
     if (myCanvas == null) {
       return;
@@ -25,17 +23,9 @@ const useConnectCanvasPoints = (
       return;
     }
 
-    // starting position
-    
-    drawPoint(context, points[0].x, points[0].y, "#ff0000");
 
-    for (let i = 1; i < points.length; i++) {
-      // intermediate positions
-      if (i == 1) {
-          drawPoint(context, points[i].x, points[i].y, '#00ff00');
-      } else {
-        drawPoint(context, points[i].x, points[i].y);
-      }
+    for (let i = 0; i < points.length; i++) {
+        drawPoint(context, points[i].x, points[i].y, '#000000');
     }
 
     // if there is only on point or no points
