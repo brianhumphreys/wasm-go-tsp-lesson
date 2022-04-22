@@ -50,6 +50,7 @@ self.onmessage = (event) => {
   if (eventType == "START") {
     console.log(eventData);
 
+    
     self.global.DistMat(eventData);
     const result = self.global.TwoOpt(jsArrayToWasmArray(eventData));
     self.postMessage({ eventType: "FINISH", eventData: wasmArrayToJsArray(result) });
