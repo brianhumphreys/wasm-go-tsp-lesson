@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
@@ -7,7 +8,9 @@ import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
 import useMouseMovePosition from "../hooks/useMouseMovePosition";
 import useTwoOptTourWorkerInvoker from "../hooks/useTwoOptTourWorkerInvoker";
-import { Pos } from "../types";
+import { addCostItem } from "../store/costSlice";
+import { Algorithms, CostTimeSeries, Pos, Tour } from "../types";
+import Chart from "./Chart";
 
 export type ReactCanvas = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
@@ -26,7 +29,29 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   const clearCanvas = useClearCanvas(myCanvas, setPoints);
   const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
-  const runWorker = useTwoOptTourWorkerInvoker(points, setPoints);
+
+  // -----------------------
+
+  // add a method to store the iteration costs in a suitable format
+  // for timeseries display
+  const [costs, setCosts] = useState<CostTimeSeries>([]);
+  const dispatch = useDispatch();
+
+  // change call back to not only set points but also add to the cost array
+  const runWorker = useTwoOptTourWorkerInvoker(points, (tour: Tour) => {
+    setPoints(tour.path);
+    console.log("task result");
+
+    console.log(tour);
+    dispatch(
+      addCostItem({
+        algorithmName: Algorithms.TWO_OPT,
+        costItem: [tour.finishTime, tour.cost],
+      })
+    );
+  });
+
+  // --------------------------
 
   useCanvasBackgroudColor(clearCanvas);
   useMakeClickableCanvas(myCanvas, points, setPoints);
@@ -34,8 +59,7 @@ const Canvas: React.FC<OurCanvas> = (props) => {
 
   // debugging
   const debugOutput = useRef<HTMLSpanElement | null>(null);
-  useMouseMovePosition(myCanvas, debugOutput)
-  
+  useMouseMovePosition(myCanvas, debugOutput);
 
   return (
     <div>
@@ -51,9 +75,9 @@ const Canvas: React.FC<OurCanvas> = (props) => {
         </button>
         <span ref={debugOutput}></span>
       </div>
-      
-      
+
       <canvas ref={setCanvasRef} {...rest} />
+      <Chart />
     </div>
   );
 };
