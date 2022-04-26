@@ -1,35 +1,32 @@
-import {
-    Dispatch,
-    MutableRefObject,
-    SetStateAction,
-    useEffect
-} from "react";
+import { Dispatch, MutableRefObject, SetStateAction, useEffect } from "react";
 import { Pos } from "../types";
 import { drawPoint, findPos } from "../utilities/canvasUtils";
 import { MyCanvas } from "./useCanvas";
+import usePoints from "./usePoints";
 
 const useMakeClickableCanvas = (
-  canvasRef: MutableRefObject<MyCanvas | null>,
-  points: Pos[],
-  setPoints: (points: Pos[]) => void,
+  canvasRefs: MutableRefObject<MyCanvas | null>[]
 ) => {
+  const { addPoint } = usePoints();
   useEffect(() => {
-    const myCanvas = canvasRef.current;
-    if (myCanvas == null) {
-      return;
-    }
-    myCanvas.canvas.onclick = (e: MouseEvent) => {
-      const point = findPos(myCanvas.canvas);
-      if (!point) {
+    canvasRefs.forEach((canvasRef) => {
+      const myCanvas = canvasRef.current;
+      if (myCanvas == null) {
         return;
       }
+      myCanvas.canvas.onclick = (e: MouseEvent) => {
+        const point = findPos(myCanvas.canvas);
+        if (!point) {
+          return;
+        }
 
-      const x = e.pageX - point.x;
-      const y = e.pageY - point.y;
+        const x = e.pageX - point.x;
+        const y = e.pageY - point.y;
 
-      setPoints([...points, { x, y }]);
-    };
-  }, [canvasRef, points]);
+        addPoint({ x, y });
+      };
+    });
+  }, [...canvasRefs]);
 };
 
 export default useMakeClickableCanvas;

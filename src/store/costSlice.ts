@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Action } from "rxjs/internal/scheduler/Action";
 import {
   AddPoint,
   AlgorithmActionPayload,
@@ -7,106 +8,90 @@ import {
   AllAlgorithmStates,
   CostIteration,
   CostTimeSeries,
+  SetCanvasRef,
   SetPoints,
 } from "../types";
+import algorithms from "../types/algorithms";
 
 export interface CostState {
   algorithms: AllAlgorithmStates;
 }
 
-const initialState: CostState = {
-  algorithms: {},
+const isSolved = (
+  algorithmState: AlgorithmState,
+  payload: CostIteration
+): boolean => {
+  const last = algorithmState.cost.length - 1;
+  return algorithmState.cost[last][1] == payload.costItem[1];
 };
 
-// create a slice that allows us to push new cost items to state without
-// know existing state.  now we do not have to resubscribe whenever the callback
-// for setCost changes as the cost array changes
-export const counterSlice = createSlice({
+const initialState: CostState = {
+  algorithms: algorithms.reduce(
+    (accum, algorithmName) => ({
+      ...accum,
+      [algorithmName]: {
+        solved: true,
+        bestRoute: [],
+        cost: [],
+      },
+    }),
+    {} as AllAlgorithmStates
+  ),
+};
+
+export const costSlice = createSlice({
   name: "cost",
   initialState,
   reducers: {
+    setCanvasRef: (state, action: PayloadAction<SetCanvasRef>) => {
+      const name = action.payload.algorithmName;
+      (state.algorithms[name] as AlgorithmState).canvasRef =
+        action.payload.canvasRef;
+    },
     setUnsolved: (state, action: PayloadAction<AlgorithmActionPayload>) => {
       const name = action.payload.algorithmName;
-      if (!!state.algorithms[name]) {
-        state.algorithms[name] = {
-          ...(state.algorithms[name] as AlgorithmState),
-          solved: false,
-        };
-      }
+      (state.algorithms[name] as AlgorithmState).solved = false;
     },
     setPoints: (state, action: PayloadAction<SetPoints>) => {
       const name = action.payload.algorithmName;
-
-      state.algorithms[name] = {
-        ...(state.algorithms[name] as AlgorithmState),
-        bestRoute: action.payload.points,
-      };
+      (state.algorithms[name] as AlgorithmState).bestRoute =
+        action.payload.points;
     },
     addPoint: (state, action: PayloadAction<AddPoint>) => {
       const name = action.payload.algorithmName;
-
-      if (state.algorithms[name] == null) {
-        state.algorithms[name] = {
-          ...(state.algorithms[name] as AlgorithmState),
-          bestRoute: [action.payload.newPoint],
-        };
-        return;
-      } else {
-        (state.algorithms[name] as AlgorithmState).bestRoute.push(
-          action.payload.newPoint
-        );
-      }
+      (state.algorithms[name] as AlgorithmState).bestRoute.push(
+        action.payload.newPoint
+      );
     },
     addCostItem: (state, action: PayloadAction<CostIteration>) => {
       const name = action.payload.algorithmName;
-      if (
-        state.algorithms[name] == null ||
-        !(state.algorithms[name] as AlgorithmState).cost
-      ) {
-        state.algorithms[name] = {
-          ...(state.algorithms[name] as AlgorithmState),
-          bestRoute: action.payload.bestRoute,
-          bestDistance: action.payload.costItem[1],
-          cost: [action.payload.costItem],
-        };
-        return;
+      if (!isSolved(state.algorithms[name] as AlgorithmState, action.payload)) {
+        (state.algorithms[name] as AlgorithmState).bestRoute =
+          action.payload.bestRoute;
+        (state.algorithms[name] as AlgorithmState).bestDistance =
+          action.payload.costItem[1];
+        (state.algorithms[name] as AlgorithmState).cost.push(
+          action.payload.costItem
+        );
       } else {
-        if (
-          ((state.algorithms[name] as AlgorithmState).cost as CostTimeSeries)[
-            ((state.algorithms[name] as AlgorithmState).cost as CostTimeSeries)
-              .length - 1
-          ][1] == action.payload.costItem[1]
-        ) {
-          state.algorithms[name] = {
-            ...(state.algorithms[name] as AlgorithmState),
-            solved: true,
-          };
-          return;
-        }
-        // lets not duplicate costs on the finish message
-        (
-          (state.algorithms[name] as AlgorithmState).cost as CostTimeSeries
-        ).push(action.payload.costItem);
-        state.algorithms[name] = {
-          ...(state.algorithms[name] as AlgorithmState),
-          bestRoute: action.payload.bestRoute,
-          bestDistance: action.payload.costItem[1],
-          cost: (state.algorithms[name] as AlgorithmState).cost,
-        };
+        (state.algorithms[name] as AlgorithmState).solved = true;
       }
     },
     clearCostItems: (state, action: PayloadAction<Algorithms>) => {
       const name = action.payload;
-      const algorithmState = state.algorithms[name];
-      if (!!algorithmState && !!algorithmState.cost) {
-        (state.algorithms[name] as AlgorithmState).cost = undefined;
-      }
+      (state.algorithms[name] as AlgorithmState).cost = [];
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addCostItem, clearCostItems, addPoint, setPoints, setUnsolved } =
-  counterSlice.actions;
+export const {
+  addCostItem,
+  clearCostItems,
+  addPoint,
+  setPoints,
+  setUnsolved,
+  setCanvasRef,
+} = costSlice.actions;
 
-export default counterSlice.reducer;
+export default costSlice.reducer;

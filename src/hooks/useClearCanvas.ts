@@ -4,30 +4,29 @@ import { clearCostItems } from "../store/costSlice";
 import { Algorithms, Pos } from "../types";
 import { clearCanvas } from "../utilities/canvasUtils";
 import { MyCanvas } from "./useCanvas";
+import usePoints from "./usePoints";
 
 const useClearCanvas = (
-  canvasRef: MutableRefObject<MyCanvas | null>,
-  setPoints: (pts: Pos[]) => void,
+  canvasRefs: MutableRefObject<MyCanvas | null>[]
 ): Function => {
-  const dispatch = useDispatch();
+  const { clearPoints } = usePoints();
 
   return useCallback(() => {
-    const myCanvas = canvasRef.current;
-    if (myCanvas == null) {
-      return;
-    }
+    canvasRefs.forEach((canvasRef) => {
+      const myCanvas = canvasRef.current;
+      if (myCanvas == null) {
+        return;
+      }
 
-    // we should clear the tracker graph and start fresh
-    // dispatch(clearCostItems(Algorithms.TWO_OPT))
+      clearCanvas(
+        myCanvas.context,
+        myCanvas.canvas.width,
+        myCanvas.canvas.height
+      );
 
-    clearCanvas(
-      myCanvas.context,
-      myCanvas.canvas.width,
-      myCanvas.canvas.height
-    );
-
-    setPoints([]);
-  }, [canvasRef]);
+      clearPoints();
+    });
+  }, [...canvasRefs]);
 };
 
 export default useClearCanvas;

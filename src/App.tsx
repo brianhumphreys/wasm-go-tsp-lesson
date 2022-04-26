@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Canvas from "./components/Canvas";
+import CanvasContainer from "./components/CanvasContainer";
 import logo from "./logo.svg";
 import { clearCanvas } from "./utilities/canvasUtils";
 
@@ -12,7 +12,7 @@ const App = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         {/* remove button from app level */}
-        <Canvas draw={clearCanvas} width="600" height="600"/>
+        <CanvasContainer width="600" height="600"/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>

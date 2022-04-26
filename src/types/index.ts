@@ -1,3 +1,6 @@
+import { MutableRefObject } from "react";
+import { MyCanvas } from "../hooks/useCanvas";
+
 export interface Pos {
     x: number;
     y: number;
@@ -33,15 +36,21 @@ export interface SetPoints extends AlgorithmActionPayload {
     points: Pos[];
 }
 
+export interface SetCanvasRef extends AlgorithmActionPayload {
+    canvasRef: MutableRefObject<MyCanvas>
+}
+
 export enum Algorithms {
     TWO_OPT = "TWO_OPT",
+    GENETIC = "GENETIC",
 }
 
 export interface AlgorithmState {
     bestRoute: Pos[],
     bestDistance?: number;
-    cost?: CostTimeSeries;
+    cost: CostTimeSeries;
     solved: boolean;
+    canvasRef?: MutableRefObject<MyCanvas>;
 }
 
 export interface AllAlgorithmStates {

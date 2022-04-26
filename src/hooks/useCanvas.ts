@@ -1,39 +1,50 @@
 import { MutableRefObject, useCallback, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setCanvasRef } from "../store/costSlice";
+import { Algorithms } from "../types";
 
 export interface MyCanvas {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
 }
 
-const useCanvas = (): [
-  MutableRefObject<MyCanvas | null>,
-  (node: HTMLCanvasElement | null) => void
-] => {
+export interface UseCanvas {
+  myCanvasRef: MutableRefObject<MyCanvas | null>;
+  setMyCanvasRef: (node: HTMLCanvasElement | null) => void;
+  algorithmName: Algorithms;
+}
+
+const useCanvas = (algorithmName: Algorithms): UseCanvas => {
   const canvasRef = useRef<MyCanvas | null>(null);
+  const dispatch = useDispatch();
 
-  const setCanvasRef = useCallback((node: HTMLCanvasElement | null): void => {
-    const canvas = node;
-    if (canvas == null) {
+  const setCanvasRefFunction = useCallback(
+    (node: HTMLCanvasElement | null): void => {
+      const canvas = node;
+      if (canvas == null) {
+        // @ts-ignore
+        canvasRef.current = null;
+        return;
+      }
+      const context = canvas.getContext("2d");
+      if (context == null) {
+        // @ts-ignore
+        canvasRef.current = null;
+        return;
+      }
+
+      const myCanvas: MyCanvas = {
+        canvas,
+        context,
+      };
       // @ts-ignore
-      canvasRef.current = null;
-      return;
-    }
-    const context = canvas.getContext("2d");
-    if (context == null) {
-      // @ts-ignore
-      canvasRef.current = null;
-      return;
-    }
+      canvasRef.current = myCanvas;
 
-    const myCanvas: MyCanvas = {
-      canvas,
-      context,
-    };
-    // @ts-ignore
-    canvasRef.current = myCanvas;
-  }, []);
+    },
+    []
+  );
 
-  return [canvasRef, setCanvasRef];
+  return { myCanvasRef: canvasRef, setMyCanvasRef: setCanvasRefFunction, algorithmName };
 };
 
 export default useCanvas;

@@ -45,7 +45,6 @@ self.onmessage = (event) => {
   }
 
   if (eventType == "START") {
-    // if there is only 1 or no data points, the distance will always be 0
     if (eventData.length < 2) {
       self.postMessage({ eventType: "FINISH", eventData });
       return;
@@ -65,7 +64,6 @@ self.onmessage = (event) => {
     });
 
     let improvementFactor = 1.0;
-    // lets lower the improvement threshold
     const improvementThreshold = 0;
 
     while (improvementFactor > improvementThreshold) {
@@ -83,11 +81,6 @@ self.onmessage = (event) => {
       improvementFactor = 1 - bestDistance / previousDistance;
 
       console.log("improvementFactor: ", improvementFactor);
-      console.log(bestDistance);
-      console.log(Math.round(bestDistance));
-      // lets send back the cost so that we can track the cost in each iteration inside of our chart.  also record finish time now
-      // for more accurate tracking on the chart.  we do not want to include the time it took this web worker to pass a message to
-      // the main thread in the tracker so recording date here is best
       self.postMessage({
         eventType: "ITERATE",
         eventData: {
@@ -98,7 +91,6 @@ self.onmessage = (event) => {
       });
     }
 
-    // lets send back the cost so that we can track the cost in each iteration inside of our chart
     self.postMessage({
       eventType: "FINISH",
       eventData: {
