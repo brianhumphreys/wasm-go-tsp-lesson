@@ -1,6 +1,5 @@
 import { MutableRefObject, useCallback, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setCanvasRef } from "../store/costSlice";
 import { Algorithms } from "../types";
 
 export interface MyCanvas {
@@ -16,7 +15,6 @@ export interface UseCanvas {
 
 const useCanvas = (algorithmName: Algorithms): UseCanvas => {
   const canvasRef = useRef<MyCanvas | null>(null);
-  const dispatch = useDispatch();
 
   const setCanvasRefFunction = useCallback(
     (node: HTMLCanvasElement | null): void => {

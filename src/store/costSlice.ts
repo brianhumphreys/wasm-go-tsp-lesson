@@ -21,7 +21,12 @@ const isSolved = (
   algorithmState: AlgorithmState,
   payload: CostIteration
 ): boolean => {
-  const last = algorithmState.cost.length - 1;
+  console.log(algorithmState);
+  const length = algorithmState.cost.length;
+  if (length == 0) {
+      return false;
+  }
+  const last = length - 1;
   return algorithmState.cost[last][1] == payload.costItem[1];
 };
 
@@ -43,11 +48,6 @@ export const costSlice = createSlice({
   name: "cost",
   initialState,
   reducers: {
-    setCanvasRef: (state, action: PayloadAction<SetCanvasRef>) => {
-      const name = action.payload.algorithmName;
-      (state.algorithms[name] as AlgorithmState).canvasRef =
-        action.payload.canvasRef;
-    },
     setUnsolved: (state, action: PayloadAction<AlgorithmActionPayload>) => {
       const name = action.payload.algorithmName;
       (state.algorithms[name] as AlgorithmState).solved = false;
@@ -64,6 +64,7 @@ export const costSlice = createSlice({
       );
     },
     addCostItem: (state, action: PayloadAction<CostIteration>) => {
+        console.log(action.payload);
       const name = action.payload.algorithmName;
       if (!isSolved(state.algorithms[name] as AlgorithmState, action.payload)) {
         (state.algorithms[name] as AlgorithmState).bestRoute =
@@ -85,13 +86,7 @@ export const costSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {
-  addCostItem,
-  clearCostItems,
-  addPoint,
-  setPoints,
-  setUnsolved,
-  setCanvasRef,
-} = costSlice.actions;
+export const { addCostItem, clearCostItems, addPoint, setPoints, setUnsolved } =
+  costSlice.actions;
 
 export default costSlice.reducer;

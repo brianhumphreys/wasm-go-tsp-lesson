@@ -1,5 +1,4 @@
-import React, { useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import useAllAlgorithmsWorkerInvoker from "../hooks/useAllAlgorithmsWorkerInvokers";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
@@ -7,21 +6,11 @@ import useClearCanvas from "../hooks/useClearCanvas";
 import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import useMouseMovePosition from "../hooks/useMouseMovePosition";
-import useTwoOptTourWorkerInvoker from "../hooks/useTwoOptTourWorkerInvoker";
-import { addCostItem, setPoints } from "../store/costSlice";
-import { RootState } from "../store/store";
 import {
-  Algorithms,
-  AlgorithmState,
-  CostTimeSeries,
-  Pos,
-  Tour,
+  Algorithms
 } from "../types";
-import Chart from "./Chart";
-import GeneticCanvas from "./GeneticCanvas";
-import TwoOptCanvas from "./AlgorithmCanvas";
 import AlgorithmCanvas from "./AlgorithmCanvas";
+import Chart from "./Chart";
 
 export type ReactCanvas = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
