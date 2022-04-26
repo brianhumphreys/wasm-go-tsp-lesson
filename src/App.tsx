@@ -12,7 +12,7 @@ const App = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         {/* remove button from app level */}
-        <CanvasContainer width="600" height="600"/>
+        <CanvasContainer width="400" height="400"/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>

@@ -1,15 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Action } from "rxjs/internal/scheduler/Action";
 import {
-  AddPoint,
-  AlgorithmActionPayload,
-  Algorithms,
-  AlgorithmState,
-  AllAlgorithmStates,
-  CostIteration,
-  CostTimeSeries,
-  SetCanvasRef,
-  SetPoints,
+    AddPoint,
+    AlgorithmActionPayload,
+    Algorithms,
+    AlgorithmState,
+    AllAlgorithmStates,
+    CostIteration, SetPoints
 } from "../types";
 import algorithms from "../types/algorithms";
 

@@ -9,10 +9,6 @@ const useConnectCanvasPoints = (canvases: UseCanvas[]) => {
   const algorithms = useAlgorithms();
   
   useEffect(() => {
-    console.log(...canvases.flatMap((can) => [
-        hashListOfPoints((algorithms[can.algorithmName] as AlgorithmState).bestRoute),
-        can.myCanvasRef,
-      ]));
     canvases.forEach((canvas) => {
         const {algorithmName, myCanvasRef} = canvas;
         const {bestRoute: points} = (algorithms[algorithmName] as AlgorithmState);

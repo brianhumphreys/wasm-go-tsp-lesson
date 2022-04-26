@@ -36,13 +36,10 @@ export interface SetPoints extends AlgorithmActionPayload {
     points: Pos[];
 }
 
-export interface SetCanvasRef extends AlgorithmActionPayload {
-    canvasRef: MutableRefObject<MyCanvas>
-}
-
 export enum Algorithms {
     TWO_OPT = "TWO_OPT",
     GENETIC = "GENETIC",
+    ANNEALING = "ANNEALING",
 }
 
 export interface AlgorithmState {
@@ -50,7 +47,6 @@ export interface AlgorithmState {
     bestDistance?: number;
     cost: CostTimeSeries;
     solved: boolean;
-    canvasRef?: MutableRefObject<MyCanvas>;
 }
 
 export interface AllAlgorithmStates {

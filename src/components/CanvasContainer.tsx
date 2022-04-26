@@ -6,9 +6,7 @@ import useClearCanvas from "../hooks/useClearCanvas";
 import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
-import {
-  Algorithms
-} from "../types";
+import { Algorithms } from "../types";
 import AlgorithmCanvas from "./AlgorithmCanvas";
 import Chart from "./Chart";
 
@@ -18,20 +16,32 @@ export type ReactCanvas = React.DetailedHTMLProps<
 >;
 
 const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
-  const twoOptCanvas =
-    useCanvas(Algorithms.TWO_OPT);
-  const geneticCanvas =
-    useCanvas(Algorithms.GENETIC);
+  const twoOptCanvas = useCanvas(Algorithms.TWO_OPT);
+  const geneticCanvas = useCanvas(Algorithms.GENETIC);
+  const annealingCanvas = useCanvas(Algorithms.ANNEALING);
 
-  const clearCanvas = useClearCanvas([twoOptCanvas.myCanvasRef, geneticCanvas.myCanvasRef]);
+  const clearCanvas = useClearCanvas([
+    twoOptCanvas.myCanvasRef,
+    geneticCanvas.myCanvasRef,
+    annealingCanvas.myCanvasRef,
+  ]);
   const getRandomButtons = useMakeRandomCanvas([
     twoOptCanvas.myCanvasRef,
     geneticCanvas.myCanvasRef,
+    annealingCanvas.myCanvasRef,
   ]);
 
   useCanvasBackgroudColor(clearCanvas);
-  useMakeClickableCanvas([twoOptCanvas.myCanvasRef, geneticCanvas.myCanvasRef]);
-  useConnectCanvasPoints([twoOptCanvas, geneticCanvas]);
+  useMakeClickableCanvas([
+    twoOptCanvas.myCanvasRef,
+    geneticCanvas.myCanvasRef,
+    annealingCanvas.myCanvasRef,
+  ]);
+  useConnectCanvasPoints([
+    twoOptCanvas,
+    geneticCanvas,
+    annealingCanvas,
+  ]);
 
   const runWorkers = useAllAlgorithmsWorkerInvoker();
 
@@ -66,6 +76,13 @@ const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
           setMyCanvasRef={geneticCanvas.setMyCanvasRef}
           myCanvasRef={geneticCanvas.myCanvasRef}
           algorithmName={Algorithms.GENETIC}
+        />
+         <AlgorithmCanvas
+          width={width}
+          height={height}
+          setMyCanvasRef={annealingCanvas.setMyCanvasRef}
+          myCanvasRef={annealingCanvas.myCanvasRef}
+          algorithmName={Algorithms.ANNEALING}
         />
       </div>
 
