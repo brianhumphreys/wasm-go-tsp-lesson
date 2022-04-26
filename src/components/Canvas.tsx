@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
 import useClearCanvas from "../hooks/useClearCanvas";
@@ -8,8 +8,9 @@ import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
 import useMouseMovePosition from "../hooks/useMouseMovePosition";
 import useTwoOptTourWorkerInvoker from "../hooks/useTwoOptTourWorkerInvoker";
-import { addCostItem } from "../store/costSlice";
-import { Algorithms, CostTimeSeries, Pos, Tour } from "../types";
+import { addCostItem, setPoints } from "../store/costSlice";
+import { RootState } from "../store/store";
+import { Algorithms, AlgorithmState, CostTimeSeries, Pos, Tour } from "../types";
 import Chart from "./Chart";
 
 export type ReactCanvas = React.DetailedHTMLProps<
@@ -24,28 +25,33 @@ export interface OurCanvas extends ReactCanvas {
 const Canvas: React.FC<OurCanvas> = (props) => {
   const { draw, ...rest } = props;
 
-  const [points, setPoints] = useState<Pos[]>([]);
+  // add a method to store the iteration costs in a suitable format
+  // for timeseries display
+  const dispatch = useDispatch();
+  const currentPath = useSelector(({ cost }: RootState) =>
+    cost.algorithms[Algorithms.TWO_OPT] != null
+      ? (cost.algorithms[Algorithms.TWO_OPT] as AlgorithmState).bestRoute
+      : []
+  );
+
+  // const [points, setPoints] = useState<Pos[]>([]);
   const [myCanvas, setCanvasRef] = useCanvas();
 
-  const clearCanvas = useClearCanvas(myCanvas, setPoints);
-  const getRandomButtons = useMakeRandomCanvas(myCanvas, setPoints);
+  const setTwoOptPoints = (points: Pos[]) =>
+    dispatch(setPoints({ algorithmName: Algorithms.TWO_OPT, points: points }));
+
+  const clearCanvas = useClearCanvas(myCanvas, setTwoOptPoints);
+  const getRandomButtons = useMakeRandomCanvas(myCanvas, setTwoOptPoints);
 
   // -----------------------
 
-  // add a method to store the iteration costs in a suitable format
-  // for timeseries display
-  const [costs, setCosts] = useState<CostTimeSeries>([]);
-  const dispatch = useDispatch();
-
   // change call back to not only set points but also add to the cost array
-  const runWorker = useTwoOptTourWorkerInvoker(points, (tour: Tour) => {
-    setPoints(tour.path);
-    console.log("task result");
-
-    console.log(tour);
+  const runWorker = useTwoOptTourWorkerInvoker(currentPath, (tour: Tour) => {
+    dispatch(setPoints({ algorithmName: Algorithms.TWO_OPT, points: tour.path }));
     dispatch(
       addCostItem({
         algorithmName: Algorithms.TWO_OPT,
+        bestRoute: tour.path,
         costItem: [tour.finishTime, tour.cost],
       })
     );
@@ -54,8 +60,8 @@ const Canvas: React.FC<OurCanvas> = (props) => {
   // --------------------------
 
   useCanvasBackgroudColor(clearCanvas);
-  useMakeClickableCanvas(myCanvas, points, setPoints);
-  useConnectCanvasPoints(myCanvas, points);
+  useMakeClickableCanvas(myCanvas, currentPath, setTwoOptPoints);
+  useConnectCanvasPoints(myCanvas, currentPath);
 
   // debugging
   const debugOutput = useRef<HTMLSpanElement | null>(null);

@@ -5,7 +5,7 @@ import { MyCanvas } from "./useCanvas";
 
 const useMakeRandomCanvas = (
   canvasRef: MutableRefObject<MyCanvas | null>,
-  setPoints: Dispatch<SetStateAction<Pos[]>>
+  setPoints: (points: Pos[]) => void,
 ): VoidFunction => {
   return useCallback(() => {
     const myCanvas = canvasRef.current;

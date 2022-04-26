@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useState } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import {
   Charts,
   ChartContainer,
@@ -77,15 +77,18 @@ const baselineStyleExtraLite = {
 };
 
 const Chart = () => {
-  const costData = useSelector(({ cost }) => cost[Algorithms.TWO_OPT] ? cost[Algorithms.TWO_OPT] : []);
+  const costData = useSelector(({ cost }: RootState) =>
+    cost.algorithms[Algorithms.TWO_OPT] &&
+    cost.algorithms[Algorithms.TWO_OPT].cost
+      ? cost.algorithms[Algorithms.TWO_OPT].cost
+      : []
+  );
 
   const [series, setSeries] = useState<TimeSeries>(
     new TimeSeries({
       name: "USD_vs_EURO",
       columns: ["time", "value"],
-      points: [
-        [Date.now(), 100],
-      ],
+      points: [[Date.now(), 100]],
     })
   );
 

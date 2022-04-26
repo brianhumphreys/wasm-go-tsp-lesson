@@ -7,7 +7,7 @@ import { MyCanvas } from "./useCanvas";
 
 const useClearCanvas = (
   canvasRef: MutableRefObject<MyCanvas | null>,
-  setPoints: Dispatch<SetStateAction<Pos[]>>
+  setPoints: (pts: Pos[]) => void,
 ): Function => {
   const dispatch = useDispatch();
 
@@ -18,7 +18,7 @@ const useClearCanvas = (
     }
 
     // we should clear the tracker graph and start fresh
-    dispatch(clearCostItems(Algorithms.TWO_OPT))
+    // dispatch(clearCostItems(Algorithms.TWO_OPT))
 
     clearCanvas(
       myCanvas.context,

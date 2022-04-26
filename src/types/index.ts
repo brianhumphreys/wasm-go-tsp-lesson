@@ -14,11 +14,36 @@ export interface Tour {
 export type CostTimeSeriesItem = [number, number]
 export type CostTimeSeries = CostTimeSeriesItem[];
 
-export interface CostIteration {
+
+export interface AlgorithmActionPayload {
     algorithmName: Algorithms;
-    costItem: CostTimeSeriesItem
+}
+
+export interface CostIteration extends AlgorithmActionPayload {
+    costItem: CostTimeSeriesItem;
+    bestRoute: Pos[];
+}
+
+
+export interface AddPoint extends AlgorithmActionPayload {
+    newPoint: Pos;
+}
+
+export interface SetPoints extends AlgorithmActionPayload {
+    points: Pos[];
 }
 
 export enum Algorithms {
     TWO_OPT = "TWO_OPT",
+}
+
+export interface AlgorithmState {
+    bestRoute: Pos[],
+    bestDistance?: number;
+    cost?: CostTimeSeries;
+    solved: boolean;
+}
+
+export interface AllAlgorithmStates {
+    [algorithmName: string]: AlgorithmState | null;
 }

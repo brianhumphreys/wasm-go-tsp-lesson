@@ -11,7 +11,7 @@ import { MyCanvas } from "./useCanvas";
 const useMakeClickableCanvas = (
   canvasRef: MutableRefObject<MyCanvas | null>,
   points: Pos[],
-  setPoints: Dispatch<SetStateAction<Pos[]>>
+  setPoints: (points: Pos[]) => void,
 ) => {
   useEffect(() => {
     const myCanvas = canvasRef.current;
