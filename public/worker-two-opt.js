@@ -5,7 +5,7 @@ const initialize = (cb) => {
 
   const go = new Go();
   WebAssembly.instantiateStreaming(
-    fetch("./gomodule.wasm"),
+    fetch("./two_opt.wasm"),
     go.importObject
   ).then((result) => {
     console.log("loaded wasm");

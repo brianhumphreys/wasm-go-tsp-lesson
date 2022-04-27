@@ -37,9 +37,9 @@ export interface SetPoints extends AlgorithmActionPayload {
 }
 
 export enum Algorithms {
-    TWO_OPT = "TWO_OPT",
-    GENETIC = "GENETIC",
-    ANNEALING = "ANNEALING",
+    TWO_OPT = "two-opt",
+    GENETIC = "genetic",
+    ANNEALING = "annealing",
 }
 
 export interface AlgorithmState {

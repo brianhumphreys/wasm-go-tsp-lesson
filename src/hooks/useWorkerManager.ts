@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
+import { Algorithms } from "../types";
 import WorkerManager from "../workers/WorkerManager";
 
 const useWorkerManager = <T, R = T>(
+  algorithmName: Algorithms,
   cb: (taskResult: R | null) => void
 ): ((taskData: T) => void) => {
   const [worker, setWorker] = useState<WorkerManager | null>(null);
 
   useEffect(() => {
-    setWorker(new WorkerManager("myworker.worker.js"));
+    setWorker(new WorkerManager(`worker-${algorithmName}.js`));
   }, []);
 
   useEffect(() => {

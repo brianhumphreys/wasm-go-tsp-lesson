@@ -17,7 +17,6 @@ const isSolved = (
   algorithmState: AlgorithmState,
   payload: CostIteration
 ): boolean => {
-  console.log(algorithmState);
   const length = algorithmState.cost.length;
   if (length == 0) {
       return false;

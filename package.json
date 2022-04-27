@@ -24,12 +24,18 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npm run compile-go && npm run cp-worker && npm run cp-exec && react-scripts start",
-    "build": "npm run compile-go && react-scripts build",
+    "start": "npm run compile:go && npm run cp:workers && npm run cp-exec && react-scripts start",
+    "build": "npm run compile:go && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "compile-go": "cd ./src/wasm_modules && GOOS=js GOARCH=wasm go build -o ../../public/gomodule.wasm",
-    "cp-worker": "cp ./src/workers/myworker.worker.js ./public",
+    "compile:go": "npm run compile:two-opt && npm run compile:annealing && npm run compile:genetic",
+    "compile:two-opt": "cd ./src/wasm_modules/two_opt && GOOS=js GOARCH=wasm go build -o ../../../public/two_opt.wasm",
+    "compile:annealing": "cd ./src/wasm_modules/two_opt && GOOS=js GOARCH=wasm go build -o ../../../public/annealing.wasm",
+    "compile:genetic": "cd ./src/wasm_modules/two_opt && GOOS=js GOARCH=wasm go build -o ../../../public/genetic.wasm",
+    "cp:workers": "npm run cp:annealing-worker && npm run cp:genetic-worker && npm run cp:two-opt-worker",
+    "cp:annealing-worker": "cp ./src/workers/worker-annealing.js ./public",
+    "cp:genetic-worker": "cp ./src/workers/worker-genetic.js ./public",
+    "cp:two-opt-worker": "cp ./src/workers/worker-two-opt.js ./public",
     "cp-exec": "cp ./src/wasm_modules/wasm_exec.js ./public"
   },
   "eslintConfig": {

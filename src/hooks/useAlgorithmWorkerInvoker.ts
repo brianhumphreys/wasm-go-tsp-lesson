@@ -17,7 +17,7 @@ const useAlgorithmWorkerInvoker = (
   const dispatch = useDispatch();
   const { solved: isSolved, bestRoute: input } = useAlgorithm(algorithmName);
 
-  const runWorker = useWorkerManager<Pos[], Tour>((tastResult) => {
+  const callback = (tastResult: Tour | null) => {
     if (tastResult != null) {
       dispatch(
         setPoints({
@@ -33,7 +33,9 @@ const useAlgorithmWorkerInvoker = (
         })
       );
     }
-  });
+  }
+
+  const runWorker = useWorkerManager<Pos[], Tour>(algorithmName, callback);
 
   return useCallback(() => {
     if (isSolved && input.length > 1) {

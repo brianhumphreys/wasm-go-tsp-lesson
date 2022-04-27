@@ -2,7 +2,6 @@ import React from "react";
 import "./App.css";
 import CanvasContainer from "./components/CanvasContainer";
 import logo from "./logo.svg";
-import { clearCanvas } from "./utilities/canvasUtils";
 
 const App = () => {
 
