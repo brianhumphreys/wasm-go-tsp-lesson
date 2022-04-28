@@ -1,3 +1,4 @@
+
 const initialize = (cb) => {
   console.log("initializing worker");
 
@@ -50,42 +51,96 @@ self.onmessage = (event) => {
       return;
     }
 
-    self.global.DistMat(eventData);
-    let bestRoute = eventData;
-    let bestDistance = self.global.PathCost(eventData);
+    let startTour = eventData;
+    let bestOverall = eventData;
+    let initialWasm = jsArrayToWasmArray(bestOverall);
+    let bestFitness = self.global.Fitness(initialWasm);
 
     self.postMessage({
       eventType: "ITERATE",
       eventData: {
-        path: wasmArrayToJsArray(bestRoute),
-        cost: Math.round(bestDistance),
+        path: bestOverall,
+        cost: Math.round(bestFitness),
         finishTime: Date.now(),
       },
     });
 
-    let improvementFactor = 1.0;
-    const improvementThreshold = 0;
+    let currentGeneration = 1;
+    const maxGeneration = 7;
 
-    while (improvementFactor > improvementThreshold) {
-      const previousDistance = bestDistance;
+    const initialTour = {
+      vertices: initialWasm,
+      fitness: bestFitness
+    }
 
-      const wasmTour = {
-        vertices: jsArrayToWasmArray(bestRoute),
-        distance: bestDistance,
+    self.global.Populate(initialTour);
+    const { vertices, fitness } = self.global.FindMostFit();
+
+    let mutations = 0;
+
+    // bestOverall
+
+    // console.log("CROSSING")
+
+    // const momPath = [{x:1,y:1}, {x:2,y:2}, {x:3,y:3}, {x:4,y:4}, {x:1,y:1}, {x:6,y:6}, {x:7,y:7}, {x:8,y:8}];
+    // console.log(momPath)
+    // const momWasm = {
+    //   vertices: jsArrayToWasmArray(momPath),
+    //   distance: 10,
+    // };
+
+    // const dadPath = [{x:2,y:2}, {x:6,y:6}, {x:1,y:1}, {x:8,y:8}, {x:4,y:4}, {x:1,y:1}, {x:3,y:3}, {x:7,y:7}];
+    // console.log(dadPath);
+    // const dadWasm = {
+    //   vertices: jsArrayToWasmArray(dadPath),
+    //   distance: 10,
+    // };
+
+    // const babyWasm = self.global.Cross(momWasm, dadWasm);
+
+    // console.log("baby")
+    // console.log(wasmArrayToJsArray(babyWasm.vertices));
+
+    // console.log(mutatedTour);
+    // console.log(wasmArrayToJsArray(mutatedTour.vertices));
+
+    while (maxGeneration > currentGeneration) {
+      currentGeneration++;
+      
+      let bestCurrent = {
+        vertices: jsArrayToWasmArray(vertices),
+        fitness,
+        mutations,
       };
-      const { vertices, distance } = self.global.IterateTwoOpt(wasmTour);
+      
+      // self.global.Select();
+      const {
+        vertices: v,
+        fitness: f,
+        mutations: m,
+      } = self.global.IterateGenetic(bestCurrent);
 
-      bestRoute = vertices;
-      bestDistance = distance;
+      bestOverall = wasmArrayToJsArray(v);
+      bestFitness = f;
+      //   const previousDistance = bestFitness;
 
-      improvementFactor = 1 - bestDistance / previousDistance;
+      //   const wasmTour = {
+      //     vertices: jsArrayToWasmArray(bestOverall),
+      //     distance: bestFitness,
+      //   };
+      //   const { vertices, distance } = self.global.IterateTwoOpt(wasmTour);
 
-      console.log("improvementFactor: ", improvementFactor);
+      //   bestOverall = vertices;
+      //   bestFitness = distance;
+
+      //   improvementFactor = 1 - bestFitness / previousDistance;
+
+      //   console.log("improvementFactor: ", improvementFactor);
       self.postMessage({
         eventType: "ITERATE",
         eventData: {
-          path: wasmArrayToJsArray(bestRoute),
-          cost: Math.round(bestDistance),
+          path: bestOverall,
+          cost: Math.round(bestFitness),
           finishTime: Date.now(),
         },
       });
@@ -94,8 +149,8 @@ self.onmessage = (event) => {
     self.postMessage({
       eventType: "FINISH",
       eventData: {
-        path: wasmArrayToJsArray(bestRoute),
-        cost: Math.round(bestDistance),
+        path: bestOverall,
+        cost: Math.round(bestFitness),
         finishTime: Date.now(),
       },
     });
