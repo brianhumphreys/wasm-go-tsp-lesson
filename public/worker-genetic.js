@@ -66,7 +66,7 @@ self.onmessage = (event) => {
     });
 
     let currentGeneration = 1;
-    const maxGeneration = 7;
+    const maxGeneration = 500;
 
     const initialTour = {
       vertices: initialWasm,
@@ -78,32 +78,6 @@ self.onmessage = (event) => {
 
     let mutations = 0;
 
-    // bestOverall
-
-    // console.log("CROSSING")
-
-    // const momPath = [{x:1,y:1}, {x:2,y:2}, {x:3,y:3}, {x:4,y:4}, {x:1,y:1}, {x:6,y:6}, {x:7,y:7}, {x:8,y:8}];
-    // console.log(momPath)
-    // const momWasm = {
-    //   vertices: jsArrayToWasmArray(momPath),
-    //   distance: 10,
-    // };
-
-    // const dadPath = [{x:2,y:2}, {x:6,y:6}, {x:1,y:1}, {x:8,y:8}, {x:4,y:4}, {x:1,y:1}, {x:3,y:3}, {x:7,y:7}];
-    // console.log(dadPath);
-    // const dadWasm = {
-    //   vertices: jsArrayToWasmArray(dadPath),
-    //   distance: 10,
-    // };
-
-    // const babyWasm = self.global.Cross(momWasm, dadWasm);
-
-    // console.log("baby")
-    // console.log(wasmArrayToJsArray(babyWasm.vertices));
-
-    // console.log(mutatedTour);
-    // console.log(wasmArrayToJsArray(mutatedTour.vertices));
-
     while (maxGeneration > currentGeneration) {
       currentGeneration++;
       
@@ -113,29 +87,18 @@ self.onmessage = (event) => {
         mutations,
       };
       
-      // self.global.Select();
       const {
         vertices: v,
         fitness: f,
         mutations: m,
       } = self.global.IterateGenetic(bestCurrent);
 
-      bestOverall = wasmArrayToJsArray(v);
-      bestFitness = f;
-      //   const previousDistance = bestFitness;
 
-      //   const wasmTour = {
-      //     vertices: jsArrayToWasmArray(bestOverall),
-      //     distance: bestFitness,
-      //   };
-      //   const { vertices, distance } = self.global.IterateTwoOpt(wasmTour);
-
-      //   bestOverall = vertices;
-      //   bestFitness = distance;
-
-      //   improvementFactor = 1 - bestFitness / previousDistance;
-
-      //   console.log("improvementFactor: ", improvementFactor);
+      if (f < bestFitness) {
+        bestOverall = wasmArrayToJsArray(v);
+        bestFitness = f;
+      }
+      
       self.postMessage({
         eventType: "ITERATE",
         eventData: {
