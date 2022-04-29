@@ -34,15 +34,8 @@ func getInterfaceMapFromTour(tour Tour) map[string]interface{} {
 func CoolDown(dropRate float64, state State) State {
 	newTour := FindNeighbor(state.currentTour)
 	r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
-	fmt.Println("cool down")
-	fmt.Println("new tour")
-	fmt.Println(newTour)
-	fmt.Println("current tour")
-	fmt.Println(state.currentTour)
 	if newTour.cost <= state.currentTour.cost || math.Pow(2.718282, (state.currentTour.cost - newTour.cost)/state.temperature) > r1.Float64() {
 		state.currentTour = newTour
-		fmt.Println("current cost: ", state.currentTour.cost)
-		fmt.Println("best tour: ", state.bestTour.cost)
 		if state.currentTour.cost < state.bestTour.cost {
 			state.bestTour = state.currentTour
 		}
@@ -185,7 +178,7 @@ func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 }
 
 func main() {
-	dropRate := 0.1
+	dropRate := 0.0000005
 	js.Global().Set("Cost", CostWrapper())
 	js.Global().Set("CoolDown", CoolDownWrapper(dropRate))
 	js.Global().Set("FindNeighbor", FindNeighborWrapper())

@@ -28,7 +28,7 @@ const useMakeRandomCanvas = (
   
       const points: Pos[] = [];
   
-      for (let i = 0; i < 400; i++) {
+      for (let i = 0; i < 200; i++) {
         const x = Math.floor(Math.random() * canvas.width);
         const y = Math.floor(Math.random() * canvas.width);
         points.push({ x, y });

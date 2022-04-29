@@ -94,9 +94,8 @@ self.onmessage = (event) => {
     // }
     while (annealingState.temperature > 1) {
       let nextAnnealingState = self.global.CoolDown(annealingState);
-      console.log("NEIGHBOR");
-      console.log(annealingState);
-      console.log(nextAnnealingState);
+      // console.log(annealingState);
+      // console.log(nextAnnealingState);
       self.postMessage({
         eventType: "ITERATE",
         eventData: {

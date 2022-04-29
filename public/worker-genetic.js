@@ -14,6 +14,17 @@ const initialize = (cb) => {
   });
 };
 
+self.iterateGenetic = (eventType, fitness, path) => {
+  self.postMessage({
+    eventType,
+    eventData: {
+      path: wasmArrayToJsArray(path),
+      cost: Math.round(fitness),
+      finishTime: Date.now(),
+    },
+  });
+}
+
 const jsArrayToWasmArray = (array) => {
   const arrayMap = {};
   for (let i = 0; i < array.length; i++) {
@@ -53,86 +64,7 @@ self.onmessage = (event) => {
     let startTour = eventData;
     let bestOverall = eventData;
     let initialWasm = jsArrayToWasmArray(bestOverall);
-    let bestFitness = self.global.Fitness(initialWasm);
 
-    // console.log("GENETIC ITERATE");
-    // console.log(bestOverall);
-    self.postMessage({
-      eventType: "ITERATE",
-      eventData: {
-        path: bestOverall,
-        cost: Math.round(bestFitness),
-        finishTime: Date.now(),
-      },
-    });
-
-    let currentGeneration = 1;
-    const maxGeneration = 50;
-
-    const initialTour = {
-      vertices: initialWasm,
-      fitness: bestFitness,
-    };
-
-    let populationMap = self.global.Populate(initialTour);
-    const { vertices, fitness } = self.global.FindMostFit(populationMap);
-
-    // console.log(`${currentGeneration}: GENETIC intermediate 1 ITERATE`);
-    // console.log(vertices);
-
-    let mutations = 0;
-
-    while (maxGeneration > currentGeneration) {
-      
-
-      let bestCurrent = {
-        vertices: jsArrayToWasmArray(vertices),
-        fitness,
-        mutations,
-        population: populationMap,
-      };
-
-      // console.log(`${currentGeneration}: GENETIC intermediate 2 ITERATE`);
-      // console.log(bestCurrent.vertices);
-
-      const testVariable = `poop generation: ${currentGeneration}`;
-      const {
-        vertices: v,
-        fitness: f,
-        mutations: m,
-        population: p
-      } = self.global.IterateGenetic(bestCurrent);
-
-      // console.log(`${currentGeneration}: GENETIC intermediate 3 ITERATE`);
-      // console.log(wasmArrayToJsArray(v));
-      // console.log(v);
-
-      populationMap = p
-      if (f < bestFitness) {
-        bestOverall = wasmArrayToJsArray(v);
-        bestFitness = f;
-      }
-
-      // console.log("GENETIC ITERATE");
-      // console.log(bestOverall);
-      self.postMessage({
-        eventType: "ITERATE",
-        eventData: {
-          path: bestOverall,
-          cost: Math.round(bestFitness),
-          finishTime: Date.now(),
-        },
-      });
-      currentGeneration++;
-    }
-
-    self.postMessage({
-      eventType: "FINISH",
-      eventData: {
-        path: bestOverall,
-        cost: Math.round(bestFitness),
-        finishTime: Date.now(),
-      },
-    });
+    self.global.Genetic(initialWasm);
   }
 };

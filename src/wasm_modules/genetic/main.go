@@ -23,7 +23,59 @@ type Tour struct {
 	probability float64
 }
 
+func Genetic(initialPath []Vertex) {
+	initialFitness := Fitness(initialPath)
+	js.Global().Call("iterateGenetic", "ITERATE", initialFitness, vertexArrayToInterfaceMap(initialPath))
+
+	initialTour := Tour{
+		vertices: initialPath,
+		fitness: initialFitness,
+	}
+
+	currentGeneration := 1
+	maxGeneration := 50
+	populationSize := 10
+	elitism := 1
+	mutationRate := 0.8
+	mutationSize := 3.0
+	mutations := 0
+
+	population := populate(initialTour, populationSize);
+	currentBest := FindMostFit(population);
+
+	for currentGeneration < maxGeneration {
+		newPopulation, bestOverall, newMutations := IterateGenetic(population, populationSize, elitism, currentBest, mutationRate, mutationSize, mutations)
+
+		population = newPopulation
+		if bestOverall.fitness < currentBest.fitness {
+			currentBest = bestOverall
+			mutations = newMutations
+			js.Global().Call("iterateGenetic", "ITERATE", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
+		}
+		
+		currentGeneration++
+	}
+
+	js.Global().Call("iterateGenetic", "FINISH", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
+
+}
+
+func GeneticWrapper() js.Func {
+	function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+
+		path := jsValueToVertexArray(args[0])
+
+		Genetic(path)
+		return 8
+	})
+	return function
+}
+
 func IterateGenetic(population []Tour, populationSize int, elitism int, bestOverall Tour, mutationRate float64, mutationSize float64, mutations int) ([]Tour, Tour, int) {
+	// js.Global().Call("testFunc")
 	parentSize := populationSize * 2
 	parents := Select(population, parentSize)
 
@@ -58,15 +110,7 @@ func IterateGenetic(population []Tour, populationSize int, elitism int, bestOver
 	if bestCurrent.fitness < bestOverall.fitness {
 		bestOverall = bestCurrent
 	}
-
 	
-	// for i := range population {
-	// 	fmt.Printf("Hash - fitness: %.2f - inv: %.2f", bestOverall.fitness, bestOverall.costInverse)
-	// 	fmt.Println(computeHashForList(bestOverall.vertices))
-	// }
-	// fmt.Printf("Hash - fitness: %.2f - inv: %.2f", bestOverall.fitness, bestOverall.costInverse)
-	// fmt.Println(computeHashForList(bestOverall.vertices))
-
 	population = newPopulation
 
 	return newPopulation, bestOverall, mutations
@@ -102,13 +146,7 @@ func IterateGeneticWrapper(populationSize int, mutationRate float64, mutationSiz
 		
 
 		newPopulation, bestOverall, mutations := IterateGenetic(population, populationSize, elitism, currentBest, mutationRate, mutationSize, mutations)
-		// fmt.Println(currentBest)
 
-		// r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
-		// vertices := []Vertex{{x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}}
-		// population = []Tour{{vertices: vertices, fitness: 100000}, {vertices: vertices, fitness: Fitness(vertices)}}
-
-		// population = newPopulation
 		return map[string]interface{}{
 			"vertices": vertexArrayToInterfaceMap(bestOverall.vertices),
 			"fitness": bestOverall.fitness,
@@ -429,8 +467,9 @@ func Shuffle(slice []Vertex) []Vertex {
  }
 
 
-func populate(population []Tour, tour Tour) []Tour {
+func populate(tour Tour, populationSize int) []Tour {
 
+	population := make([]Tour, populationSize)
 	for i := 0; i < len(population); i++ {
 		newVertices := Shuffle(tour.vertices)
 		population[i] = Tour{vertices: newVertices, fitness: Fitness(newVertices)}
@@ -438,20 +477,20 @@ func populate(population []Tour, tour Tour) []Tour {
 	return population
 }
 
-func PopulateWrapper(population []Tour) js.Func {
-	populateFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if len(args) != 1 {
-			return "Invalid number of arguments passed.  Expecting 1."
-		}
-		startPath := jsValueToVertexArray(args[0].Get("vertices"))
-		startDistance := float64(args[0].Get("fitness").Int())
+// func PopulateWrapper(population []Tour) js.Func {
+// 	populateFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+// 		if len(args) != 1 {
+// 			return "Invalid number of arguments passed.  Expecting 1."
+// 		}
+// 		startPath := jsValueToVertexArray(args[0].Get("vertices"))
+// 		startDistance := float64(args[0].Get("fitness").Int())
 
-		population = populate(population, Tour{vertices: startPath, fitness: startDistance})
+// 		population = populate(population, Tour{vertices: startPath, fitness: startDistance})
 
-		return populationToInterfaceMap(population)
-	})
-	return populateFunction
-}
+// 		return populationToInterfaceMap(population)
+// 	})
+// 	return populateFunction
+// }
 
 func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
@@ -465,11 +504,12 @@ func main() {
 	mutationRate := 0.7
 	mutationSize := 3.0
   js.Global().Set("Fitness", FitnessWrapper())
+  js.Global().Set("Genetic", GeneticWrapper())
   js.Global().Set("IterateGenetic", IterateGeneticWrapper(populationSize, mutationRate, mutationSize))
   js.Global().Set("FindMostFit", FindMostFitWrapper())
   js.Global().Set("Mutate", MutateWrapper(mutationRate, mutationSize))
   js.Global().Set("Cross", CrossWrapper())
   js.Global().Set("Select", SelectWrapper(population))
-  js.Global().Set("Populate", PopulateWrapper(population))
+//   js.Global().Set("Populate", PopulateWrapper(population))
     <-make(chan bool)
 }
