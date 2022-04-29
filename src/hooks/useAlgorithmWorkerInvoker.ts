@@ -19,9 +19,6 @@ const useAlgorithmWorkerInvoker = (algorithmName: Algorithms) => {
 
   const callback = (taskResult: Tour | null) => {
     if (taskResult != null) {
-      // console.log("TASK RESULT");
-      // console.log(algorithmName);
-      // console.log(taskResult);
       setPointsSingular(algorithmName, taskResult.path);
       dispatch(
         addCostItem({
