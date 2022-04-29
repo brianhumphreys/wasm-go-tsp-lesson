@@ -50,52 +50,76 @@ self.onmessage = (event) => {
       return;
     }
 
-    self.global.DistMat(eventData);
-    let bestRoute = eventData;
-    let bestDistance = self.global.PathCost(eventData);
+    let bestOverall = eventData;
+    let initialWasm = jsArrayToWasmArray(bestOverall);
+    let bestFitness = self.global.Cost(initialWasm);
 
+    // console.log("GENETIC ITERATE");
+    // console.log(bestOverall);
     self.postMessage({
       eventType: "ITERATE",
       eventData: {
-        path: wasmArrayToJsArray(bestRoute),
-        cost: Math.round(bestDistance),
+        path: bestOverall,
+        cost: Math.round(bestFitness),
         finishTime: Date.now(),
       },
     });
 
-    let improvementFactor = 1.0;
-    const improvementThreshold = 0;
+    // let currentGeneration = 1;
+    // const maxGeneration = 50;
 
-    while (improvementFactor > improvementThreshold) {
-      const previousDistance = bestDistance;
+    const initialTour = {
+      vertices: initialWasm,
+      cost: bestFitness,
+    };
 
-      const wasmTour = {
-        vertices: jsArrayToWasmArray(bestRoute),
-        distance: bestDistance,
-      };
-      const { vertices, distance } = self.global.IterateTwoOpt(wasmTour);
+    let annealingState = {
+      bestTour: initialTour,
+      currentTour: initialTour,
+      temperature: 100,
+    };
 
-      bestRoute = vertices;
-      bestDistance = distance;
+    //   function run(initialTour, temperature, dropRate, delay){
+    //     var startCost = cost(initialTour);
+    //     var state = {bestTour:{vertices:initialTour, cost:startCost}, temperature:temperature, currentTour:{vertices:initialTour, cost:startCost}};
 
-      improvementFactor = 1 - bestDistance / previousDistance;
-
-      console.log("improvementFactor: ", improvementFactor);
+    //     function delayed_coolDown(){
+    //         setTimeout(function(){
+    //             coolDown(dropRate, state);
+    //             if(state.temperature > 1) delayed_coolDown(); // loop until it's cold
+    //             else state_changed('Started with cost: '+Math.floor(startCost)+', ended with cost: '+Math.floor(state.bestTour.cost), state.bestTour);
+    //         }, delay);
+    //     }
+    //     delayed_coolDown();
+    // }
+    while (annealingState.temperature > 1) {
+      let nextAnnealingState = self.global.CoolDown(annealingState);
+      console.log("NEIGHBOR");
+      console.log(annealingState);
+      console.log(nextAnnealingState);
       self.postMessage({
         eventType: "ITERATE",
         eventData: {
-          path: wasmArrayToJsArray(bestRoute),
-          cost: Math.round(bestDistance),
+          path: wasmArrayToJsArray(nextAnnealingState.bestTour.vertices),
+          cost: Math.round(nextAnnealingState.bestTour.cost),
           finishTime: Date.now(),
         },
       });
+
+      annealingState = nextAnnealingState;
+      // const { vertices, fitness } = self.global.FindMostFit(populationMap);
+
+      // console.log(`${currentGeneration}: GENETIC intermediate 1 ITERATE`);
+      // console.log(vertices);
+
+      // let mutations = 0;
     }
 
     self.postMessage({
       eventType: "FINISH",
       eventData: {
-        path: wasmArrayToJsArray(bestRoute),
-        cost: Math.round(bestDistance),
+        path: wasmArrayToJsArray(annealingState.bestTour.vertices),
+        cost: Math.round(annealingState.bestTour.cost),
         finishTime: Date.now(),
       },
     });

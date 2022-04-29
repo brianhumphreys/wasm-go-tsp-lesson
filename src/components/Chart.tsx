@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import {
   Charts,
@@ -56,6 +56,7 @@ const baselineStyleExtraLite = {
 const Chart = () => {
   const states = useAlgorithms();
 
+  const [counter, setCounter] = useState(0);
   const [startTime, setStartTime] = useState(0);
   const [series1Offset, setSeries1Offset] = useState(0);
   const [series2Offset, setSeries2Offset] = useState(0);
@@ -70,17 +71,11 @@ const Chart = () => {
   );
 
   const setStartTimeIfNotSet = (chartStartTime: number) => {
-    if(startTime == 0) {
+    if (startTime == 0) {
       // console.log('start time: ', startTime);
       setStartTime(chartStartTime);
     }
-  }
-
-  const setOffsetTimeIfNotSet = (chartStartTime: number, seriesStartTime: number, offset: number, setOffset: Dispatch<SetStateAction<number>>) => {
-    if (offset == 0 && chartStartTime != seriesStartTime) {
-      setOffset(seriesStartTime - chartStartTime);
-    }
-  }
+  };
 
 
   useEffect(() => {
@@ -94,11 +89,20 @@ const Chart = () => {
       const newSeries = new TimeSeries({
         name: "TSP Algorithm Cost Result Comparison",
         columns: ["time", "value"],
-        points: states[Algorithms.TWO_OPT].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])),
+        points: states[Algorithms.TWO_OPT].cost.map((cost) => [
+          cost[0] - startTime - (seriesStartTime - startTime),
+          cost[1],
+        ]),
       });
       setSeries1(newSeries);
+      setCounter(counter + 1);
     }
-  }, [states[Algorithms.TWO_OPT].cost.length, startTime, series1Offset, setSeries1Offset]);
+  }, [
+    states[Algorithms.TWO_OPT].cost.length,
+    startTime,
+    series1Offset,
+    setSeries1Offset,
+  ]);
 
   const [series2, setSeries2] = useState<TimeSeries>(
     new TimeSeries({
@@ -111,38 +115,54 @@ const Chart = () => {
   useEffect(() => {
     // console.log('use effect: ', startTime);
     if (states[Algorithms.GENETIC].cost.length > 0) {
-      const seriesStartTime = states[Algorithms.GENETIC].cost[0][0]
+      const seriesStartTime = states[Algorithms.GENETIC].cost[0][0];
       setStartTimeIfNotSet(seriesStartTime);
-      // setOffsetTimeIfNotSet(startTime, seriesStartTime, series2Offset, setSeries2Offset);
-      // console.log('genetic')
-      // console.log(states[Algorithms.GENETIC].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])))
       const newSeries = new TimeSeries({
         name: "TSP Algorithm Cost Result Comparison",
         columns: ["time", "value"],
-        points: states[Algorithms.GENETIC].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])),
+        points: states[Algorithms.GENETIC].cost.map((cost) => [
+          cost[0] - startTime - (seriesStartTime - startTime),
+          cost[1],
+        ]),
       });
       setSeries2(newSeries);
+      setCounter(counter + 1);
     }
-  }, [states[Algorithms.GENETIC].cost.length, startTime, series2Offset, setSeries2Offset]);
+  }, [
+    states[Algorithms.GENETIC].cost.length,
+    startTime,
+    series2Offset,
+    setSeries2Offset,
+  ]);
 
-  // const [series3, setSeries3] = useState<TimeSeries>(
-  //   new TimeSeries({
-  //     name: "TSP Algorithm Cost Result Comparison",
-  //     columns: ["time", "value"],
-  //     points: [[Date.now(), 100]],
-  //   })
-  // );
+  const [series3, setSeries3] = useState<TimeSeries>(
+    new TimeSeries({
+      name: "TSP Algorithm Cost Result Comparison",
+      columns: ["time", "value"],
+      points: [[Date.now(), 100]],
+    })
+  );
 
-  // useEffect(() => {
-  //   if (states[Algorithms.ANNEALING].cost.length > 0) {
-  //     const newSeries = new TimeSeries({
-  //       name: "TSP Algorithm Cost Result Comparison",
-  //       columns: ["time", "value"],
-  //       points: states[Algorithms.ANNEALING].cost,
-  //     });
-  //     setSeries3(newSeries);
-  //   }
-  // }, [states[Algorithms.ANNEALING].cost.length]);
+  useEffect(() => {
+    if (states[Algorithms.ANNEALING].cost.length > 0) {
+      const seriesStartTime = states[Algorithms.ANNEALING].cost[0][0];
+      setStartTimeIfNotSet(seriesStartTime);
+      const newSeries = new TimeSeries({
+        name: "TSP Algorithm Cost Result Comparison",
+        columns: ["time", "value"],
+        points: states[Algorithms.ANNEALING].cost.map((cost) => [
+          cost[0] - startTime - (seriesStartTime - startTime),
+          cost[1],
+        ]),
+      });
+      setSeries3(newSeries);
+    }
+  }, [
+    states[Algorithms.ANNEALING].cost.length,
+    startTime,
+    series3Offset,
+    setSeries3Offset,
+  ]);
 
   const chartStyler1 = styler([{ key: "value", color: "#ff0000", width: 3 }]);
   const chartStyler2 = styler([{ key: "value", color: "#00ff00", width: 3 }]);
@@ -153,7 +173,7 @@ const Chart = () => {
   const [timeRange, setTimeRange] = useState(series1.range());
 
   useEffect(() => {
-    const seriesArray = [series1, series2];
+    const seriesArray = [series1, series2, series3];
     const minSeriesIndex = seriesArray.reduce((minIdx, series, curIdx) => {
       if (seriesArray[minIdx].min() > series.min()) {
         return curIdx;
@@ -172,10 +192,10 @@ const Chart = () => {
     setMin(seriesArray[minSeriesIndex].min());
     setMax(seriesArray[maxSeriesIndex].max());
     setTimeRange(seriesArray[timeRangeIndex].range());
-  }, [series1, series2]);
+  }, [series1, series2, series3]);
 
-  return (
-    <div className="Chart-container">
+  const chartComponent = useMemo(() => {
+    return (
       <Resizable>
         <ChartContainer
           title="TSP Algorithm Cost Result Comparison"
@@ -211,13 +231,13 @@ const Chart = () => {
                 interpolation="curveBasis"
                 spacing={1}
               />
-              {/* <LineChart
-              axis="cost"
-              series={series3}
-              style={chartStyler3}
-              interpolation="curveBasis"
-              spacing={1}
-            /> */}
+              <LineChart
+                axis="cost"
+                series={series3}
+                style={chartStyler3}
+                interpolation="curveBasis"
+                spacing={1}
+              />
               <Baseline
                 axis="cost"
                 style={baselineStyleLite}
@@ -253,8 +273,10 @@ const Chart = () => {
           </ChartRow>
         </ChartContainer>
       </Resizable>
-    </div>
-  );
+    );
+  }, [min, max, timeRange]);
+
+  return <div className="Chart-container">{chartComponent}</div>;
 };
 
 export default Chart;

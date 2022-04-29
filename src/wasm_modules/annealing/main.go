@@ -1,9 +1,11 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 	"syscall/js"
 	"math"
+	"math/rand"
+	"time"
 )
 
 type Vertex struct {
@@ -16,124 +18,115 @@ type Tour struct {
 	cost     float64
 }
 
+type State struct {
+	currentTour Tour
+	bestTour Tour
+	temperature float64
+}
 
-func createDistanceMatrixSetter(points []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) {
-    for i := range points {
-        distanceMatrix[points[i]] = make(map[Vertex]float64)
-    }
-
-	for i := 0; i < len(points); i++ {
-		for j := i; j < len(points); j++ {
-			if j == i {
-				distanceMatrix[points[j]][points[i]] = 0
-			} else {
-				dist := Distance(points[i], points[j])
-				distanceMatrix[points[j]][points[i]] = dist
-				distanceMatrix[points[i]][points[j]] = dist
-			}
-		}
+func getInterfaceMapFromTour(tour Tour) map[string]interface{} {
+	return map[string]interface{}{
+		"vertices": vertexArrayToInterfaceMap(tour.vertices),
+		"cost": tour.cost,
 	}
 }
 
-func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
-	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+func CoolDown(dropRate float64, state State) State {
+	newTour := FindNeighbor(state.currentTour)
+	r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
+	fmt.Println("cool down")
+	fmt.Println("new tour")
+	fmt.Println(newTour)
+	fmt.Println("current tour")
+	fmt.Println(state.currentTour)
+	if newTour.cost <= state.currentTour.cost || math.Pow(2.718282, (state.currentTour.cost - newTour.cost)/state.temperature) > r1.Float64() {
+		state.currentTour = newTour
+		fmt.Println("current cost: ", state.currentTour.cost)
+		fmt.Println("best tour: ", state.bestTour.cost)
+		if state.currentTour.cost < state.bestTour.cost {
+			state.bestTour = state.currentTour
+		}
+	}
+	state.temperature *= (1 - dropRate)
+	return state
+}
+
+func CoolDownWrapper(dropRate float64) js.Func {
+	function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
-		startPath := jsValueToVertexArray(args[0])
 
-		createDistanceMatrixSetter(startPath, distanceMatrix)
+		currentTourPath := jsValueToVertexArray(args[0].Get("currentTour").Get("vertices"))
+		currentTourCost := float64(args[0].Get("currentTour").Get("cost").Int())
+		bestTourPath := jsValueToVertexArray(args[0].Get("bestTour").Get("vertices"))
+		bestTourCost := float64(args[0].Get("bestTour").Get("cost").Int())
+		temperature := float64(args[0].Get("temperature").Int())
 
-		return 8
+		state := State {
+			currentTour: Tour{
+				vertices: currentTourPath,
+				cost: currentTourCost,
+			},
+			bestTour: Tour{
+				vertices: bestTourPath,
+				cost: bestTourCost,
+			},
+			temperature: temperature,
+		};
+
+		newState := CoolDown(dropRate, state)
+
+		return map[string]interface{}{
+			"bestTour": getInterfaceMapFromTour(newState.bestTour),
+			"currentTour": getInterfaceMapFromTour(newState.currentTour),
+			"temperature": newState.temperature,
+		}
 	})
-	return twoOptFunction
+	return function
 }
 
-func PathCost(distanceMatrix map[Vertex]map[Vertex]float64, path []Vertex) float64 {
-	total := 0.0
-	for i := 0; i < len(path) - 1; i++ {
-		total += distanceMatrix[path[i]][path[i + 1]]
+func FindNeighbor(currentTour Tour) Tour {
+    r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	newVertices := make([]Vertex, len(currentTour.vertices))
+	for i, vertex := range currentTour.vertices {
+		newVertices[i] = vertex
 	}
-	total += distanceMatrix[path[len(path) - 1]][path[0]]
-	return total
-}
 
-func pathCostWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
-	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if len(args) != 1 {
-			return "Invalid number of arguments passed.  Expecting 1."
-		}
-		startPath := jsValueToVertexArray(args[0])
+	candidate1 := int(math.Floor(r1.Float64() * float64(len(newVertices))))
+	candidate2 := int(math.Floor(r1.Float64() * float64(len(newVertices))))
+	temp := newVertices[candidate1]
+	newVertices[candidate1] = newVertices[candidate2]
+	newVertices[candidate2] = temp
 
-		return PathCost(distanceMatrix, startPath)
-	})
-	return twoOptFunction
-}
-
-func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) (float64, []Vertex) {
-	newBestDistance := bestDistance
-	newBestRoute := bestRoute
-	
-	for swapFirst := 1; swapFirst < len(bestRoute) - 2; swapFirst++ {
-		for swapLast := swapFirst + 1; swapLast < len(bestRoute) - 1; swapLast++ {
-			beforeStart := newBestRoute[swapFirst - 1]
-			start := newBestRoute[swapFirst]
-			end := newBestRoute[swapLast]
-			afterEnd := newBestRoute[swapLast+1]
-			before := distanceMatrix[beforeStart][start] + distanceMatrix[end][afterEnd]
-			after := distanceMatrix[beforeStart][end] + distanceMatrix[start][afterEnd]
-			if after < before {
-				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
-				newBestDistance = PathCost(distanceMatrix, newBestRoute)
-			}
-		}
-
-		swapFirst := 0
-		swapFirstMinusOne := len(bestRoute) - 1
-		beforeStart := newBestRoute[swapFirstMinusOne]
-		start := newBestRoute[swapFirst]
-
-		for swapLast := swapFirst + 1; swapLast < len(bestRoute) - 1; swapLast++ {
-			end := newBestRoute[swapLast]
-			afterEnd := newBestRoute[swapLast+1]
-			before := distanceMatrix[beforeStart][start] + distanceMatrix[end][afterEnd]
-			after := distanceMatrix[beforeStart][end] + distanceMatrix[start][afterEnd]
-			if after < before {
-				newBestRoute = Reverse(newBestRoute, swapFirst, swapLast)
-				newBestDistance = PathCost(distanceMatrix, newBestRoute)
-			}
-		}
+	return Tour{
+		vertices: newVertices,
+		cost: Cost(newVertices),
 	}
-	// fmt.Printf("New Iteration: New cost: %f\n", newBestDistance)
-	return newBestDistance, newBestRoute
 }
 
-func iterateTwoOptWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
-	twoOptFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+func FindNeighborWrapper() js.Func {
+	function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) != 1 {
 			return "Invalid number of arguments passed.  Expecting 1."
 		}
 
 		startPath := jsValueToVertexArray(args[0].Get("vertices"))
-		startDistance := float64(args[0].Get("distance").Int())
+		startDistance := float64(args[0].Get("cost").Int())
 
-		if len(startPath) == 0 || len(startPath) == 1 {
-			return vertexArrayToInterfaceMap(startPath) 
+		individual := Tour{
+			vertices: startPath,
+			cost: startDistance,
 		}
-		bestDistance, bestPath := iterateTwoOpt(startDistance, startPath, distanceMatrix)
+		neighbor := FindNeighbor(individual)
+
 		return map[string]interface{}{
-			"vertices": vertexArrayToInterfaceMap(bestPath),
-			"distance": bestDistance,
+			"vertices": vertexArrayToInterfaceMap(neighbor.vertices),
+			"cost": neighbor.cost,
 		}
 	})
-	return twoOptFunction
-}
-
-func Reverse(vertices []Vertex, start int, end int) []Vertex {
-	for ; start < end; start, end = start+1, end-1 {
-		vertices[start], vertices[end] = vertices[end], vertices[start]
-	}
-	return vertices
+	return function
 }
 
 func vertexArrayToInterfaceMap(vertices []Vertex) map[string]interface{} {
@@ -162,16 +155,39 @@ func jsValueToVertexArray(vertices js.Value) []Vertex {
 	return resultArray
 }
 
+func Cost(vertices []Vertex) float64 {
+	total := 0.0
+
+	for i := 1; i < len(vertices); i++ {
+		total += Distance(vertices[i], vertices[i-1]);
+	}
+	total += Distance(vertices[len(vertices) - 1], vertices[0])
+
+	return total
+}
+
+func CostWrapper() js.Func {
+	function := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) != 1 {
+			return "Invalid number of arguments passed.  Expecting 1."
+		}
+
+		path := jsValueToVertexArray(args[0])
+
+		return Cost(path)
+	})
+return function
+}
+
 func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
 	return math.Pow(math.Pow(vertex1.x-vertex2.x, 2)+math.Pow(vertex1.y-vertex2.y, 2), 0.5)
 }
 
-
 func main() {
-	distanceMatrix := map[Vertex]map[Vertex]float64{}
-  js.Global().Set("IterateTwoOpt", iterateTwoOptWrapper(distanceMatrix))
-  js.Global().Set("PathCost", pathCostWrapper(distanceMatrix))
-  js.Global().Set("DistMat", createDistanceMatrixWrapper(distanceMatrix))
+	dropRate := 0.1
+	js.Global().Set("Cost", CostWrapper())
+	js.Global().Set("CoolDown", CoolDownWrapper(dropRate))
+	js.Global().Set("FindNeighbor", FindNeighborWrapper())
     <-make(chan bool)
 }

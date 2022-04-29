@@ -67,15 +67,15 @@ self.onmessage = (event) => {
     });
 
     let currentGeneration = 1;
-    const maxGeneration = 3;
+    const maxGeneration = 50;
 
     const initialTour = {
       vertices: initialWasm,
       fitness: bestFitness,
     };
 
-    self.global.Populate(initialTour);
-    const { vertices, fitness } = self.global.FindMostFit();
+    let populationMap = self.global.Populate(initialTour);
+    const { vertices, fitness } = self.global.FindMostFit(populationMap);
 
     // console.log(`${currentGeneration}: GENETIC intermediate 1 ITERATE`);
     // console.log(vertices);
@@ -89,21 +89,25 @@ self.onmessage = (event) => {
         vertices: jsArrayToWasmArray(vertices),
         fitness,
         mutations,
+        population: populationMap,
       };
 
       // console.log(`${currentGeneration}: GENETIC intermediate 2 ITERATE`);
       // console.log(bestCurrent.vertices);
 
+      const testVariable = `poop generation: ${currentGeneration}`;
       const {
         vertices: v,
         fitness: f,
         mutations: m,
+        population: p
       } = self.global.IterateGenetic(bestCurrent);
 
       // console.log(`${currentGeneration}: GENETIC intermediate 3 ITERATE`);
       // console.log(wasmArrayToJsArray(v));
       // console.log(v);
 
+      populationMap = p
       if (f < bestFitness) {
         bestOverall = wasmArrayToJsArray(v);
         bestFitness = f;
