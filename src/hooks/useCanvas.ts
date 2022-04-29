@@ -5,6 +5,7 @@ import { Algorithms } from "../types";
 export interface MyCanvas {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  algorithmName: Algorithms;
 }
 
 export interface UseCanvas {
@@ -34,6 +35,7 @@ const useCanvas = (algorithmName: Algorithms): UseCanvas => {
       const myCanvas: MyCanvas = {
         canvas,
         context,
+        algorithmName,
       };
       // @ts-ignore
       canvasRef.current = myCanvas;

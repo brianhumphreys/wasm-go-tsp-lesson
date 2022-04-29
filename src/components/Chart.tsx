@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Charts,
@@ -16,6 +16,7 @@ import { TimeSeries } from "pondjs";
 import defaultData from "./data";
 import { Algorithms } from "../types";
 import useAlgorithms from "../hooks/useAlgorithms";
+import { start } from "repl";
 
 const baselineStyle = {
   line: {
@@ -55,6 +56,11 @@ const baselineStyleExtraLite = {
 const Chart = () => {
   const states = useAlgorithms();
 
+  const [startTime, setStartTime] = useState(0);
+  const [series1Offset, setSeries1Offset] = useState(0);
+  const [series2Offset, setSeries2Offset] = useState(0);
+  const [series3Offset, setSeries3Offset] = useState(0);
+
   const [series1, setSeries1] = useState<TimeSeries>(
     new TimeSeries({
       name: "TSP Algorithm Cost Result Comparison",
@@ -63,18 +69,36 @@ const Chart = () => {
     })
   );
 
+  const setStartTimeIfNotSet = (chartStartTime: number) => {
+    if(startTime == 0) {
+      // console.log('start time: ', startTime);
+      setStartTime(chartStartTime);
+    }
+  }
+
+  const setOffsetTimeIfNotSet = (chartStartTime: number, seriesStartTime: number, offset: number, setOffset: Dispatch<SetStateAction<number>>) => {
+    if (offset == 0 && chartStartTime != seriesStartTime) {
+      setOffset(seriesStartTime - chartStartTime);
+    }
+  }
+
+
   useEffect(() => {
+    // console.log('use effect: ', startTime);
     if (states[Algorithms.TWO_OPT].cost.length > 0) {
+      const seriesStartTime = states[Algorithms.TWO_OPT].cost[0][0];
+      setStartTimeIfNotSet(seriesStartTime);
+      // setOffsetTimeIfNotSet(startTime, seriesStartTime, series1Offset, setSeries1Offset);
+      // console.log('two opt')
+      // console.log(states[Algorithms.TWO_OPT].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])))
       const newSeries = new TimeSeries({
         name: "TSP Algorithm Cost Result Comparison",
         columns: ["time", "value"],
-        points: states[Algorithms.TWO_OPT].cost,
+        points: states[Algorithms.TWO_OPT].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])),
       });
       setSeries1(newSeries);
-      console.log('TWO OPT CHART COST');
-      console.log(states[Algorithms.TWO_OPT].cost);
     }
-  }, [states[Algorithms.TWO_OPT].cost.length]);
+  }, [states[Algorithms.TWO_OPT].cost.length, startTime, series1Offset, setSeries1Offset]);
 
   const [series2, setSeries2] = useState<TimeSeries>(
     new TimeSeries({
@@ -85,17 +109,21 @@ const Chart = () => {
   );
 
   useEffect(() => {
+    // console.log('use effect: ', startTime);
     if (states[Algorithms.GENETIC].cost.length > 0) {
+      const seriesStartTime = states[Algorithms.GENETIC].cost[0][0]
+      setStartTimeIfNotSet(seriesStartTime);
+      // setOffsetTimeIfNotSet(startTime, seriesStartTime, series2Offset, setSeries2Offset);
+      // console.log('genetic')
+      // console.log(states[Algorithms.GENETIC].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])))
       const newSeries = new TimeSeries({
         name: "TSP Algorithm Cost Result Comparison",
         columns: ["time", "value"],
-        points: states[Algorithms.GENETIC].cost,
+        points: states[Algorithms.GENETIC].cost.map((cost) => ([cost[0] - startTime - (seriesStartTime - startTime), cost[1]])),
       });
-      console.log('GENETIC CHART COST')
-      console.log(states[Algorithms.GENETIC].cost)
       setSeries2(newSeries);
     }
-  }, [states[Algorithms.GENETIC].cost.length]);
+  }, [states[Algorithms.GENETIC].cost.length, startTime, series2Offset, setSeries2Offset]);
 
   // const [series3, setSeries3] = useState<TimeSeries>(
   //   new TimeSeries({
@@ -116,89 +144,116 @@ const Chart = () => {
   //   }
   // }, [states[Algorithms.ANNEALING].cost.length]);
 
-
   const chartStyler1 = styler([{ key: "value", color: "#ff0000", width: 3 }]);
   const chartStyler2 = styler([{ key: "value", color: "#00ff00", width: 3 }]);
   const chartStyler3 = styler([{ key: "value", color: "#0000ff", width: 3 }]);
 
-  return (
-    <Resizable>
-      <ChartContainer
-        title="TSP Algorithm Cost Result Comparison"
-        titleStyle={{ fill: "#555", fontWeight: 500 }}
-        timeRange={series1.range()}
-        format="%S.%L" //"%b '%y"
-        timeAxisTickCount={100}
-        width={700}
-      >
-        {/* <Legend type="line" style={chartStyler1} categories={legend} /> */}
-        <ChartRow height="300">
-          <YAxis
-            id="cost"
-            label="Cost (Pixel Distance)"
-            min={Math.min(series1.min())}
-            max={Math.max(series1.max())}
-            width="100"
-            format=","
-          />
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
+  const [timeRange, setTimeRange] = useState(series1.range());
 
-          <Charts>
-            <LineChart
-              axis="cost"
-              series={series1}
-              style={chartStyler1}
-              interpolation="curveBasis"
-              spacing={1}
+  useEffect(() => {
+    const seriesArray = [series1, series2];
+    const minSeriesIndex = seriesArray.reduce((minIdx, series, curIdx) => {
+      if (seriesArray[minIdx].min() > series.min()) {
+        return curIdx;
+      } else return minIdx;
+    }, 0);
+    const maxSeriesIndex = seriesArray.reduce((maxIdx, series, curIdx) => {
+      if (seriesArray[maxIdx].max() < series.max()) {
+        return curIdx;
+      } else return maxIdx;
+    }, 0);
+    const timeRangeIndex = seriesArray.reduce((trIdx, series, curIdx) => {
+      if (seriesArray[trIdx].range().duration() < series.range().duration()) {
+        return curIdx;
+      } else return trIdx;
+    }, 0);
+    setMin(seriesArray[minSeriesIndex].min());
+    setMax(seriesArray[maxSeriesIndex].max());
+    setTimeRange(seriesArray[timeRangeIndex].range());
+  }, [series1, series2]);
+
+  return (
+    <div className="Chart-container">
+      <Resizable>
+        <ChartContainer
+          title="TSP Algorithm Cost Result Comparison"
+          titleStyle={{ fill: "#555", fontWeight: 500 }}
+          timeRange={timeRange}
+          format="%S.%L" //"%b '%y"
+          timeAxisTickCount={6}
+          width={700}
+        >
+          {/* <Legend type="line" style={chartStyler1} categories={legend} /> */}
+          <ChartRow height="300">
+            <YAxis
+              id="cost"
+              label="Cost (Pixel Distance)"
+              min={min - 30}
+              max={max + 30}
+              width="100"
+              format=","
             />
-            <LineChart
-              axis="cost"
-              series={series2}
-              style={chartStyler2}
-              interpolation="curveBasis"
-              spacing={1}
-            />
-            {/* <LineChart
+
+            <Charts>
+              <LineChart
+                axis="cost"
+                series={series1}
+                style={chartStyler1}
+                interpolation="curveBasis"
+                spacing={1}
+              />
+              <LineChart
+                axis="cost"
+                series={series2}
+                style={chartStyler2}
+                interpolation="curveBasis"
+                spacing={1}
+              />
+              {/* <LineChart
               axis="cost"
               series={series3}
               style={chartStyler3}
               interpolation="curveBasis"
               spacing={1}
             /> */}
-            <Baseline
-              axis="cost"
-              style={baselineStyleLite}
-              value={Math.max(series1.max(), series2.max())}
-              label="Max"
-              position="right"
-            />
-            <Baseline
-              axis="cost"
-              style={baselineStyleLite}
-              value={Math.min(series1.min(), series2.min())}
-              label="Min"
-              position="right"
-            />
-            <Baseline
-              axis="cost"
-              style={baselineStyleExtraLite}
-              value={series1.avg() - series1.stdev()}
-            />
-            <Baseline
-              axis="cost"
-              style={baselineStyleExtraLite}
-              value={series1.avg() + series1.stdev()}
-            />
-            <Baseline
-              axis="cost"
-              style={baselineStyle}
-              value={series1.avg()}
-              label="Avg"
-              position="right"
-            />
-          </Charts>
-        </ChartRow>
-      </ChartContainer>
-    </Resizable>
+              <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={Math.max(series2.max())}
+                label="Max"
+                position="right"
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={Math.min(series2.min())}
+                label="Min"
+                position="right"
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleExtraLite}
+                value={series2.avg() - series2.stdev()}
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleExtraLite}
+                value={series2.avg() + series2.stdev()}
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyle}
+                value={series2.avg()}
+                label="Avg"
+                position="right"
+              />
+            </Charts>
+          </ChartRow>
+        </ChartContainer>
+      </Resizable>
+    </div>
   );
 };
 

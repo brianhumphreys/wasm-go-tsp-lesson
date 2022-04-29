@@ -9,31 +9,29 @@ import {
 import { Algorithms, Pos, Tour } from "../types";
 import { hashListOfPoints } from "../utilities/pointUtils";
 import useAlgorithm from "./useAlgorithm";
+import usePoints from "./usePoints";
 import useWorkerManager from "./useWorkerManager";
 
-const useAlgorithmWorkerInvoker = (
-  algorithmName: Algorithms
-) => {
+const useAlgorithmWorkerInvoker = (algorithmName: Algorithms) => {
   const dispatch = useDispatch();
+  const { setPointsSingular } = usePoints();
   const { solved: isSolved, bestRoute: input } = useAlgorithm(algorithmName);
 
-  const callback = (tastResult: Tour | null) => {
-    if (tastResult != null) {
-      dispatch(
-        setPoints({
-          algorithmName: algorithmName,
-          points: tastResult.path,
-        })
-      );
+  const callback = (taskResult: Tour | null) => {
+    if (taskResult != null) {
+      // console.log("TASK RESULT");
+      // console.log(algorithmName);
+      // console.log(taskResult);
+      setPointsSingular(algorithmName, taskResult.path);
       dispatch(
         addCostItem({
           algorithmName: algorithmName,
-          bestRoute: tastResult.path,
-          costItem: [tastResult.finishTime, tastResult.cost],
+          bestRoute: taskResult.path,
+          costItem: [taskResult.finishTime, taskResult.cost],
         })
       );
     }
-  }
+  };
 
   const runWorker = useWorkerManager<Pos[], Tour>(algorithmName, callback);
 

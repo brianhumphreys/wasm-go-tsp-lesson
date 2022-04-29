@@ -1,4 +1,3 @@
-
 const initialize = (cb) => {
   console.log("initializing worker");
 
@@ -56,6 +55,8 @@ self.onmessage = (event) => {
     let initialWasm = jsArrayToWasmArray(bestOverall);
     let bestFitness = self.global.Fitness(initialWasm);
 
+    // console.log("GENETIC ITERATE");
+    // console.log(bestOverall);
     self.postMessage({
       eventType: "ITERATE",
       eventData: {
@@ -66,39 +67,50 @@ self.onmessage = (event) => {
     });
 
     let currentGeneration = 1;
-    const maxGeneration = 500;
+    const maxGeneration = 3;
 
     const initialTour = {
       vertices: initialWasm,
-      fitness: bestFitness
-    }
+      fitness: bestFitness,
+    };
 
     self.global.Populate(initialTour);
     const { vertices, fitness } = self.global.FindMostFit();
 
+    // console.log(`${currentGeneration}: GENETIC intermediate 1 ITERATE`);
+    // console.log(vertices);
+
     let mutations = 0;
 
     while (maxGeneration > currentGeneration) {
-      currentGeneration++;
       
+
       let bestCurrent = {
         vertices: jsArrayToWasmArray(vertices),
         fitness,
         mutations,
       };
-      
+
+      // console.log(`${currentGeneration}: GENETIC intermediate 2 ITERATE`);
+      // console.log(bestCurrent.vertices);
+
       const {
         vertices: v,
         fitness: f,
         mutations: m,
       } = self.global.IterateGenetic(bestCurrent);
 
+      // console.log(`${currentGeneration}: GENETIC intermediate 3 ITERATE`);
+      // console.log(wasmArrayToJsArray(v));
+      // console.log(v);
 
       if (f < bestFitness) {
         bestOverall = wasmArrayToJsArray(v);
         bestFitness = f;
       }
-      
+
+      // console.log("GENETIC ITERATE");
+      // console.log(bestOverall);
       self.postMessage({
         eventType: "ITERATE",
         eventData: {
@@ -107,6 +119,7 @@ self.onmessage = (event) => {
           finishTime: Date.now(),
         },
       });
+      currentGeneration++;
     }
 
     self.postMessage({

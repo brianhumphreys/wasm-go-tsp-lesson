@@ -72,7 +72,7 @@ class WorkerManager {
   _run<T, R = T>(work: T): Observable<R> {
     return new Observable<R>((subscriber) => {
       this.workerInstance.onmessage = (event) => {
-        console.log(event.data);
+        // console.log(event.data);
         const { eventType, eventData }: EventData<R> = event.data;
 
         if (eventType == WorkerEventType.FINISH) {

@@ -46,12 +46,20 @@
 
 .Algorithm-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .Canvas-container {
   display: flex;
+  width: 95%;
   flex-direction: row;
   justify-content: space-around;
+}
+
+.Chart-container {
+  width: 80%;
 }
 
 @keyframes App-logo-spin {

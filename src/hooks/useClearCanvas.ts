@@ -1,7 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { clearCostItems } from "../store/costSlice";
-import { Algorithms, Pos } from "../types";
+import { MutableRefObject, useCallback } from "react";
 import { clearCanvas } from "../utilities/canvasUtils";
 import { MyCanvas } from "./useCanvas";
 import usePoints from "./usePoints";
@@ -9,7 +6,7 @@ import usePoints from "./usePoints";
 const useClearCanvas = (
   canvasRefs: MutableRefObject<MyCanvas | null>[]
 ): Function => {
-  const { clearPoints } = usePoints();
+  const { clearPointsSingular } = usePoints();
 
   return useCallback(() => {
     canvasRefs.forEach((canvasRef) => {
@@ -24,7 +21,7 @@ const useClearCanvas = (
         myCanvas.canvas.height
       );
 
-      clearPoints();
+      clearPointsSingular(myCanvas.algorithmName);
     });
   }, [...canvasRefs]);
 };

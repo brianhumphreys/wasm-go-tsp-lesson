@@ -21,11 +21,25 @@ const usePoints = () => {
       dispatch(setPoints({ algorithmName, points: [] }))
     );
 
-return {
+  const setPointsSingularFunction = (
+    algorithmName: Algorithms,
+    points: Pos[]
+  ) => dispatch(setPoints({ algorithmName, points }));
+
+  const addPointSingularFunction = (algorithmName: Algorithms, newPoint: Pos) =>
+    dispatch(addPoint({ algorithmName, newPoint }));
+
+  const clearPointsSingularFunction = (algorithmName: Algorithms) =>
+    dispatch(setPoints({ algorithmName, points: [] }));
+
+  return {
     setPoints: setPointsFunction,
     addPoint: addPointFunction,
     clearPoints: clearPointsFunction,
-}
+    setPointsSingular: setPointsSingularFunction,
+    addPointSingular: addPointSingularFunction,
+    clearPointsSingular: clearPointsSingularFunction,
+  };
 };
 
 export default usePoints;

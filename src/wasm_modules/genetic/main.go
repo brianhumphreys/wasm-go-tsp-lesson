@@ -61,6 +61,7 @@ func IterateGenetic(population []Tour, populationSize int, elitism int, bestOver
 		bestOverall = bestCurrent
 	}
 
+	
 	// for i := range population {
 	// 	fmt.Printf("Hash - fitness: %.2f - inv: %.2f", bestOverall.fitness, bestOverall.costInverse)
 	// 	fmt.Println(computeHashForList(bestOverall.vertices))
@@ -68,6 +69,7 @@ func IterateGenetic(population []Tour, populationSize int, elitism int, bestOver
 	// fmt.Printf("Hash - fitness: %.2f - inv: %.2f", bestOverall.fitness, bestOverall.costInverse)
 	// fmt.Println(computeHashForList(bestOverall.vertices))
 
+	population = newPopulation
 
 	return newPopulation, bestOverall, mutations
 }
@@ -96,7 +98,16 @@ func IterateGeneticWrapper(population []Tour, populationSize int, mutationRate f
 		}
 
 		elitism := 1
+
+		fmt.Println("before iterate")
+		fmt.Println(population[0])
+		// fmt.Println(currentBest)
+		
+
 		newPopulation, bestOverall, mutations := IterateGenetic(population, populationSize, elitism, currentBest, mutationRate, mutationSize, mutations)
+		fmt.Println("after iterate")
+		fmt.Println(population[0])
+		// fmt.Println(currentBest)
 
 		// r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
 		// vertices := []Vertex{{x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}, {x: math.Floor(r1.Float64()*10), y: math.Floor(r1.Float64()*10)}}
@@ -389,12 +400,13 @@ func Shuffle(slice []Vertex) []Vertex {
 	return newVertices
  }
 
-func populate(population []Tour, tour Tour) {
+func populate(population []Tour, tour Tour) []Tour {
 
 	for i := 0; i < len(population); i++ {
 		newVertices := Shuffle(tour.vertices)
 		population[i] = Tour{vertices: newVertices, fitness: Fitness(newVertices)}
 	}
+	return population
 }
 func PopulateWrapper(population []Tour) js.Func {
 	populateFunction := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
@@ -404,7 +416,14 @@ func PopulateWrapper(population []Tour) js.Func {
 		startPath := jsValueToVertexArray(args[0].Get("vertices"))
 		startDistance := float64(args[0].Get("fitness").Int())
 
-		populate(population, Tour{vertices: startPath, fitness: startDistance})
+		fmt.Println("before populate")
+		fmt.Println(population[0])
+		population = populate(population, Tour{vertices: startPath, fitness: startDistance})
+		fmt.Println("after populate")
+		fmt.Println(population[0])
+
+		// fmt.Println("population")
+		// fmt.Println(population)
 
 		return 8
 	})
@@ -418,7 +437,7 @@ func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
 
 func main() {
-	populationSize := 100
+	populationSize := 200
 	population := make([]Tour, populationSize)
 	mutationRate := 0.7
 	mutationSize := 3.0

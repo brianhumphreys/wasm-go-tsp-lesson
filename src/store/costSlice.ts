@@ -59,7 +59,7 @@ export const costSlice = createSlice({
       );
     },
     addCostItem: (state, action: PayloadAction<CostIteration>) => {
-        console.log(action.payload);
+        // console.log(action.payload);
       const name = action.payload.algorithmName;
       if (!isSolved(state.algorithms[name] as AlgorithmState, action.payload)) {
         (state.algorithms[name] as AlgorithmState).bestRoute =
