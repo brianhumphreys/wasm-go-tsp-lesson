@@ -6,7 +6,7 @@ import usePoints from "./usePoints";
 const useClearCanvas = (
   canvasRefs: MutableRefObject<MyCanvas | null>[]
 ): Function => {
-  const { clearPointsSingular } = usePoints();
+  const { clearPointsSingular, clearCostsSingular } = usePoints();
 
   return useCallback(() => {
     canvasRefs.forEach((canvasRef) => {
@@ -22,6 +22,7 @@ const useClearCanvas = (
       );
 
       clearPointsSingular(myCanvas.algorithmName);
+      clearCostsSingular(myCanvas.algorithmName);
     });
   }, [...canvasRefs]);
 };

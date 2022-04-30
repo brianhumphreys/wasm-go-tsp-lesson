@@ -80,7 +80,7 @@ self.onmessage = (event) => {
 
       improvementFactor = 1 - bestDistance / previousDistance;
 
-      console.log("improvementFactor: ", improvementFactor);
+      // console.log("improvementFactor: ", improvementFactor);
       self.postMessage({
         eventType: "ITERATE",
         eventData: {

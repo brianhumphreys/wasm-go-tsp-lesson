@@ -4,7 +4,12 @@ import { ReactCanvas } from "./CanvasContainer";
 
 const AlgorithmCanvas: React.FC<UseCanvas & ReactCanvas> = ({ setMyCanvasRef, height, width }) => {
 
-  return <canvas ref={setMyCanvasRef} height={height} width={width}/>;
+  return (
+    <div >
+      <canvas ref={setMyCanvasRef} height={height} width={width}/>
+    </div>
+    
+  );
 };
 
 export default AlgorithmCanvas;

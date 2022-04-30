@@ -15,6 +15,8 @@ const initialize = (cb) => {
 };
 
 self.iterateGenetic = (eventType, fitness, path) => {
+  // console.log("ITERATE GENETIC: " + eventType);
+  // console.log(fitness);
   self.postMessage({
     eventType,
     eventData: {

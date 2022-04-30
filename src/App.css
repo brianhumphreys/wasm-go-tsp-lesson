@@ -58,6 +58,13 @@
   justify-content: space-around;
 }
 
+.Individual-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* padding: 5px; */
+}
+
 .Chart-container {
   width: 80%;
 }

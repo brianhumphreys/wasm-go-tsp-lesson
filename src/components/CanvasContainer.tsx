@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import useAllAlgorithmsWorkerInvoker from "../hooks/useAllAlgorithmsWorkerInvokers";
 import useCanvas from "../hooks/useCanvas";
 import useCanvasBackgroudColor from "../hooks/useCanvasBackgroundColor";
@@ -6,6 +6,7 @@ import useClearCanvas from "../hooks/useClearCanvas";
 import useConnectCanvasPoints from "../hooks/useConnectCanvasPoints";
 import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
+import useMouseMovePosition from "../hooks/useMouseMovePosition";
 import { Algorithms } from "../types";
 import AlgorithmCanvas from "./AlgorithmCanvas";
 import Chart from "./Chart";
@@ -45,8 +46,12 @@ const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
 
   const runWorkers = useAllAlgorithmsWorkerInvoker();
 
-  // const debugOutput = useRef<HTMLSpanElement | null>(null);
-  // useMouseMovePosition(myCanvas, debugOutput);
+  const debugOutput = useRef<HTMLSpanElement | null>(null);
+  useMouseMovePosition([
+    twoOptCanvas,
+    geneticCanvas,
+    annealingCanvas,
+  ], debugOutput);
 
   return (
     <div className="Algorithm-container">
@@ -60,7 +65,7 @@ const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
         <button className="Worker-button" onClick={() => runWorkers()}>
           run
         </button>
-        {/* <span ref={debugOutput}></span> */}
+        <span ref={debugOutput}></span>
       </div>
       <div className="Canvas-container">
         <AlgorithmCanvas

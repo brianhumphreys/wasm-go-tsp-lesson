@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { addPoint, setPoints } from "../store/costSlice";
+import { addPoint, clearCostItems, setPoints } from "../store/costSlice";
 import { Algorithms, Pos } from "../types";
 import algorithms from "../types/algorithms";
 
@@ -32,10 +32,14 @@ const usePoints = () => {
   const clearPointsSingularFunction = (algorithmName: Algorithms) =>
     dispatch(setPoints({ algorithmName, points: [] }));
 
+  const clearCostsSingularFunction = (algorithmName: Algorithms) =>
+    dispatch(clearCostItems(algorithmName));
+
   return {
     setPoints: setPointsFunction,
     addPoint: addPointFunction,
     clearPoints: clearPointsFunction,
+    clearCostsSingular: clearCostsSingularFunction,
     setPointsSingular: setPointsSingularFunction,
     addPointSingular: addPointSingularFunction,
     clearPointsSingular: clearPointsSingularFunction,

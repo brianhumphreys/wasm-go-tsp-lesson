@@ -24,10 +24,12 @@ export interface EventData<T> {
 class WorkerManager {
   workerInstance: Worker; 
   workerState: WorkerState; 
+  filepath: string;
 
   constructor(filepath: string) {
     this.workerInstance = new Worker(filepath); 
-    this.workerState = WorkerState.NOT_INITIALIZED; 
+    this.workerState = WorkerState.NOT_INITIALIZED;
+    this.filepath = filepath; 
   }
   
   async initialize(): Promise<void | null> {
@@ -76,6 +78,13 @@ class WorkerManager {
         const { eventType, eventData }: EventData<R> = event.data;
 
         if (eventType == WorkerEventType.FINISH) {
+          type Event = {
+            path: any;
+            cost: any;
+          }
+          console.log("finished: ", this.filepath);
+          console.log((eventData as unknown as Event).path);
+          console.log((eventData as unknown as Event).cost);
           this.setWorkerState(WorkerState.READY);
           subscriber.next(eventData);
           subscriber.complete();

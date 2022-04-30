@@ -43,6 +43,14 @@ func Genetic(initialPath []Vertex) {
 	population := populate(initialTour, populationSize);
 	currentBest := FindMostFit(population);
 
+	if initialTour.fitness < currentBest.fitness {
+		currentBest = initialTour
+	}
+
+	// fmt.Println("calling iterate")
+	// fmt.Println(currentBest.fitness)
+	js.Global().Call("iterateGenetic", "ITERATE", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
+
 	for currentGeneration < maxGeneration {
 		newPopulation, bestOverall, newMutations := IterateGenetic(population, populationSize, elitism, currentBest, mutationRate, mutationSize, mutations)
 
@@ -50,12 +58,21 @@ func Genetic(initialPath []Vertex) {
 		if bestOverall.fitness < currentBest.fitness {
 			currentBest = bestOverall
 			mutations = newMutations
+
+			fmt.Println("calling iterate")
+			fmt.Println(currentBest.fitness)
+			fmt.Println(currentBest.vertices)
 			js.Global().Call("iterateGenetic", "ITERATE", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
 		}
 		
 		currentGeneration++
 	}
 
+	fmt.Println("calling finish")
+	fmt.Println(currentBest.fitness)
+	fmt.Println(currentBest.vertices)
+	fmt.Print("recalculate: ")
+	fmt.Println(Fitness(currentBest.vertices))
 	js.Global().Call("iterateGenetic", "FINISH", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
 
 }
@@ -98,7 +115,9 @@ func IterateGenetic(population []Tour, populationSize int, elitism int, bestOver
 		mom := parents[momIdx]
 		dad := parents[dadIdx]
 		individual := Cross(mom, dad)
-		if Mutate(mutationRate, mutationSize, individual)  {
+		mutatedIndividual, didMutate := Mutate(mutationRate, mutationSize, individual)
+		individual = mutatedIndividual
+		if didMutate  {
 			mutations++
 		}
 		newPopulation = append(newPopulation, individual)
@@ -108,7 +127,12 @@ func IterateGenetic(population []Tour, populationSize int, elitism int, bestOver
 	}
 	// fmt.Println("NEW POP SIZE: ", len(newPopulation))
 	if bestCurrent.fitness < bestOverall.fitness {
+		
 		bestOverall = bestCurrent
+		fmt.Println("SETTING BEST")
+		fmt.Println(bestOverall.vertices)
+		fmt.Println(bestOverall.fitness)
+		fmt.Println(Fitness(bestOverall.vertices))
 	}
 	
 	population = newPopulation
@@ -306,7 +330,7 @@ func CrossWrapper() js.Func {
 	return twoOptFunction
 }
 
-func Mutate(mutationRate float64, mutationSize float64, individual Tour) bool {
+func Mutate(mutationRate float64, mutationSize float64, individual Tour) (Tour, bool) {
     r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
 	if r1.Float64() <= mutationRate {
 		numberOfMutations := int(math.Floor((r1.Float64() * mutationSize) + 1.0))
@@ -319,9 +343,9 @@ func Mutate(mutationRate float64, mutationSize float64, individual Tour) bool {
 			individual.vertices[candidate2] = temp
 			individual.fitness = Fitness(individual.vertices)
 		}
-		return true
+		return individual, true
 	}
-	return false
+	return individual, false
 }
 
 func MutateWrapper(mutationRate float64, mutationSize float64) js.Func {
@@ -499,17 +523,17 @@ func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
 
 func main() {
-	populationSize := 200
-	population := make([]Tour, populationSize)
-	mutationRate := 0.7
-	mutationSize := 3.0
-  js.Global().Set("Fitness", FitnessWrapper())
+	// populationSize := 200
+	// population := make([]Tour, populationSize)
+	// mutationRate := 0.7
+	// mutationSize := 3.0
+//   js.Global().Set("Fitness", FitnessWrapper())
   js.Global().Set("Genetic", GeneticWrapper())
-  js.Global().Set("IterateGenetic", IterateGeneticWrapper(populationSize, mutationRate, mutationSize))
-  js.Global().Set("FindMostFit", FindMostFitWrapper())
-  js.Global().Set("Mutate", MutateWrapper(mutationRate, mutationSize))
-  js.Global().Set("Cross", CrossWrapper())
-  js.Global().Set("Select", SelectWrapper(population))
+//   js.Global().Set("IterateGenetic", IterateGeneticWrapper(populationSize, mutationRate, mutationSize))
+//   js.Global().Set("FindMostFit", FindMostFitWrapper())
+//   js.Global().Set("Mutate", MutateWrapper(mutationRate, mutationSize))
+//   js.Global().Set("Cross", CrossWrapper())
+//   js.Global().Set("Select", SelectWrapper(population))
 //   js.Global().Set("Populate", PopulateWrapper(population))
     <-make(chan bool)
 }
