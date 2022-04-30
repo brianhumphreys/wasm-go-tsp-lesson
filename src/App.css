@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: rgb(20,30,35);
 }
 
 .App-logo {
@@ -14,14 +15,24 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  /* background-color: #282c34; */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+
+.App-header-row {
+  display: flex;
+  flex-direction: row;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.center-row {
+  justify-content: center;
+}
+
+.left-row {
+  justify-content: flex-start;
 }
 
 .Worker-button {
@@ -40,8 +51,14 @@
   flex-direction: row;
 }
 
+.App-link-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .App-link {
   color: #61dafb;
+  
 }
 
 .Algorithm-container {
@@ -54,17 +71,88 @@
 .Canvas-container {
   display: flex;
   width: 95%;
+  max-width: 1400px;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+}
+
+.Canvas-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.Algorithm-header {
+  color: white;
+}
+
+.Chart-indicator {
+  height: 16px;
+  width: 16px;
+  border-radius: 8px;
+}
+
+.Read-more-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 20px;
+  width: 120px;
+  background-color: rgb(31, 76, 152);
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.Read-more-link:hover {
+  background-color: rgb(56, 109, 174);
+}
+
+.Read-more {
+  padding-left: 10px;
 }
 
 .Individual-canvas-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: rgb(32, 40, 48);
   /* padding: 5px; */
 }
 
+.Chart-background {
+  width: 95%;
+  max-width: 1400px;
+  background-color: rgb(32, 40, 48);
+  margin: 20px 0 20px 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.Chart-Legend {
+  display: flex;
+  flex-direction: column;
+}
+
+.Chart-color {
+  display: flex;
+  flex-direction: row;
+  height: 800px;
+  width: 85%;
+  background-color: "#fffdd0";
+  padding: 20px;
+  border-radius: 2px;
+}
+
+/* .Chart-inner-container {
+
+} */
 .Chart-container {
   width: 80%;
 }

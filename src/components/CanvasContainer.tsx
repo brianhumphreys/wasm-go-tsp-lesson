@@ -8,6 +8,7 @@ import useMakeClickableCanvas from "../hooks/useMakeClickableCanvas";
 import useMakeRandomCanvas from "../hooks/useMakeRandomCanvas";
 import useMouseMovePosition from "../hooks/useMouseMovePosition";
 import { Algorithms } from "../types";
+import { annealingLink, geneticLink, twoOptLink } from "../types/links";
 import AlgorithmCanvas from "./AlgorithmCanvas";
 import Chart from "./Chart";
 
@@ -38,23 +39,51 @@ const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
     geneticCanvas.myCanvasRef,
     annealingCanvas.myCanvasRef,
   ]);
-  useConnectCanvasPoints([
-    twoOptCanvas,
-    geneticCanvas,
-    annealingCanvas,
-  ]);
+  useConnectCanvasPoints([twoOptCanvas, geneticCanvas, annealingCanvas]);
 
   const runWorkers = useAllAlgorithmsWorkerInvoker();
 
   const debugOutput = useRef<HTMLSpanElement | null>(null);
-  useMouseMovePosition([
-    twoOptCanvas,
-    geneticCanvas,
-    annealingCanvas,
-  ], debugOutput);
+  useMouseMovePosition(
+    [twoOptCanvas, geneticCanvas, annealingCanvas],
+    debugOutput
+  );
 
   return (
     <div className="Algorithm-container">
+      <div className="Canvas-container">
+        <AlgorithmCanvas
+          width={width}
+          height={height}
+          setMyCanvasRef={twoOptCanvas.setMyCanvasRef}
+          myCanvasRef={twoOptCanvas.myCanvasRef}
+          algorithmName={Algorithms.TWO_OPT}
+          title="Two-Opt Algorithm"
+          indicatorColor="red"
+          link={twoOptLink}
+        />
+        <AlgorithmCanvas
+          width={width}
+          height={height}
+          setMyCanvasRef={geneticCanvas.setMyCanvasRef}
+          myCanvasRef={geneticCanvas.myCanvasRef}
+          algorithmName={Algorithms.GENETIC}
+          title="Genetic Algorithm"
+          indicatorColor="green"
+          link={geneticLink}
+        />
+        <AlgorithmCanvas
+          width={width}
+          height={height}
+          setMyCanvasRef={annealingCanvas.setMyCanvasRef}
+          myCanvasRef={annealingCanvas.myCanvasRef}
+          algorithmName={Algorithms.ANNEALING}
+          title="Simulated Annealing"
+          indicatorColor="blue"
+          link={annealingLink}
+        />
+      </div>
+
       <div className="Button-container">
         <button className="Worker-button" onClick={getRandomButtons}>
           random
@@ -67,32 +96,12 @@ const CanvasContainer: React.FC<ReactCanvas> = ({ height, width }) => {
         </button>
         <span ref={debugOutput}></span>
       </div>
-      <div className="Canvas-container">
-        <AlgorithmCanvas
-          width={width}
-          height={height}
-          setMyCanvasRef={twoOptCanvas.setMyCanvasRef}
-          myCanvasRef={twoOptCanvas.myCanvasRef}
-          algorithmName={Algorithms.TWO_OPT}
-        />
-        <AlgorithmCanvas
-          width={width}
-          height={height}
-          setMyCanvasRef={geneticCanvas.setMyCanvasRef}
-          myCanvasRef={geneticCanvas.myCanvasRef}
-          algorithmName={Algorithms.GENETIC}
-        />
-         <AlgorithmCanvas
-          width={width}
-          height={height}
-          setMyCanvasRef={annealingCanvas.setMyCanvasRef}
-          myCanvasRef={annealingCanvas.myCanvasRef}
-          algorithmName={Algorithms.ANNEALING}
-        />
-      </div>
-
       {/* <AlgorithmCanvas myCanvasRef={myGeneticCanvas} setMyCanvasRef={setGeneticCanvasRef}/> */}
-      <Chart />
+      <div className="Chart-background">
+        <div className="Chart-color">
+          <Chart />
+        </div>
+      </div>
     </div>
   );
 };

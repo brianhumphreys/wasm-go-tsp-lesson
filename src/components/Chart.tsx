@@ -241,18 +241,49 @@ const Chart = () => {
               <Baseline
                 axis="cost"
                 style={baselineStyleLite}
-                value={Math.max(series2.max())}
-                label="Max"
-                position="right"
+                value={series1.max()}
+                label="Start Cost"
+                position="left"
               />
               <Baseline
                 axis="cost"
                 style={baselineStyleLite}
-                value={Math.min(series2.min())}
-                label="Min"
-                position="right"
+                value={series2.max()}
+                label="Start Cost"
+                position="left"
               />
               <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={series3.max()}
+                label="Start Cost"
+                position="left"
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={series1.min()}
+                label="End Cost"
+                position="right"
+                vposition="below"
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={series2.min()}
+                label="End Cost"
+                position="right"
+                vposition="below"
+              />
+              <Baseline
+                axis="cost"
+                style={baselineStyleLite}
+                value={series3.min()}
+                label="End Cost"
+                position="right"
+                vposition="below"
+              />
+              {/* <Baseline
                 axis="cost"
                 style={baselineStyleExtraLite}
                 value={series2.avg() - series2.stdev()}
@@ -268,7 +299,7 @@ const Chart = () => {
                 value={series2.avg()}
                 label="Avg"
                 position="right"
-              />
+              /> */}
             </Charts>
           </ChartRow>
         </ChartContainer>
