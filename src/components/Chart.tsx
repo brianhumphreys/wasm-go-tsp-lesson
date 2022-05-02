@@ -203,7 +203,7 @@ const Chart = () => {
           timeRange={timeRange}
           format="%S.%L" //"%b '%y"
           timeAxisTickCount={6}
-          width={700}
+          // width={window.innerWidth * 0.2}
         >
           {/* <Legend type="line" style={chartStyler1} categories={legend} /> */}
           <ChartRow height="300">
@@ -212,7 +212,7 @@ const Chart = () => {
               label="Cost (Pixel Distance)"
               min={min - 30}
               max={max + 30}
-              width="100"
+              width="60"
               format=","
             />
 
@@ -283,23 +283,6 @@ const Chart = () => {
                 position="right"
                 vposition="below"
               />
-              {/* <Baseline
-                axis="cost"
-                style={baselineStyleExtraLite}
-                value={series2.avg() - series2.stdev()}
-              />
-              <Baseline
-                axis="cost"
-                style={baselineStyleExtraLite}
-                value={series2.avg() + series2.stdev()}
-              />
-              <Baseline
-                axis="cost"
-                style={baselineStyle}
-                value={series2.avg()}
-                label="Avg"
-                position="right"
-              /> */}
             </Charts>
           </ChartRow>
         </ChartContainer>

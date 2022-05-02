@@ -21,7 +21,7 @@ const App = () => {
           </div>
         </div>
         <div className="App-header-row center-row">
-          <h2>Traveling Salesman Problem - Comparing Algorithms</h2>
+          <h2>Traveling Salesperson Problem - Comparing Algorithms</h2>
         </div>
       </header>
       <CanvasContainer width="400" height="400" />
