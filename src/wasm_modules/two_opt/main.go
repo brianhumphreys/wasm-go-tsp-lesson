@@ -7,32 +7,57 @@ import (
 )
 
 type Vertex struct {
-	x float64
-	y float64
+	X float64
+	Y float64
 }
 
 type Tour struct {
-	vertices []Vertex
-	cost     float64
+	Vertices []Vertex
+	Cost     float64
 }
 
 
-func createDistanceMatrixSetter(points []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) {
-    for i := range points {
-        distanceMatrix[points[i]] = make(map[Vertex]float64)
-    }
+func createDistanceMatrixSetter(points []Vertex) {
+	distanceMatrix := make(map[Vertex]map[Vertex]float64, len(points))
 
 	for i := 0; i < len(points); i++ {
-		for j := i; j < len(points); j++ {
+		row := make(map[Vertex]float64, len(points))
+		for j := 0; j < len(points); j++ {
 			if j == i {
-				distanceMatrix[points[j]][points[i]] = 0
+				row[points[j]] = 0
 			} else {
 				dist := Distance(points[i], points[j])
-				distanceMatrix[points[j]][points[i]] = dist
-				distanceMatrix[points[i]][points[j]] = dist
+				row[points[j]] = dist
 			}
 		}
+		distanceMatrix[points[i]] = row
+		// fmt.Println(distanceMatrix[points[i]][points[len(points) - 1]])
+		// if i == len(points) - 1 {
+		// 	fmt.Println("outer")
+		// 	fmt.Println(row[points[len(points) - 1]])
+			
+			settedRow := distanceMatrix[points[i]]
+			fmt.Println(i)
+			fmt.Println(settedRow[points[len(points) - 8]])
+		// }
+		
 	}
+
+	fmt.Println("test print 1")
+	fmt.Println(distanceMatrix[points[len(points) - 1]][points[len(points) - 2]])
+	fmt.Println(distanceMatrix[points[len(points) - 2]][points[len(points) - 3]])
+	fmt.Println(distanceMatrix[points[len(points) - 3]][points[len(points) - 4]])
+	fmt.Println(distanceMatrix[points[len(points) - 4]][points[len(points) - 5]])
+	fmt.Println(distanceMatrix[points[len(points) - 5]][points[len(points) - 6]])
+	fmt.Println(distanceMatrix[points[len(points) - 6]][points[len(points) - 7]])
+	fmt.Println(distanceMatrix[points[len(points) - 7]][points[len(points) - 8]])
+	fmt.Println(distanceMatrix[points[len(points) - 8]][points[len(points) - 9]])
+	fmt.Println(distanceMatrix[points[len(points) - 9]][points[len(points) - 10]])
+	fmt.Println(distanceMatrix[points[len(points) - 10]][points[len(points) - 11]])
+	fmt.Println(distanceMatrix[points[len(points) - 11]][points[len(points) - 12]])
+	fmt.Println(distanceMatrix[points[len(points) - 12]][points[len(points) - 13]])
+	fmt.Println(distanceMatrix[points[len(points) - 13]][points[len(points) - 14]])
+	fmt.Println(distanceMatrix[points[len(points) - 14]][points[len(points) - 15]])
 }
 
 func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
@@ -42,7 +67,9 @@ func createDistanceMatrixWrapper(distanceMatrix map[Vertex]map[Vertex]float64) j
 		}
 		startPath := jsValueToVertexArray(args[0])
 
-		createDistanceMatrixSetter(startPath, distanceMatrix)
+
+		createDistanceMatrixSetter(startPath)
+		// createDistanceMatrixSetter(startPath, distanceMatrix)
 
 		return 8
 	})
@@ -73,6 +100,8 @@ func pathCostWrapper(distanceMatrix map[Vertex]map[Vertex]float64) js.Func {
 func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[Vertex]map[Vertex]float64) (float64, []Vertex) {
 	newBestDistance := bestDistance
 	newBestRoute := bestRoute
+	fmt.Println("test print")
+	fmt.Println(distanceMatrix[bestRoute[3]][bestRoute[4]])
 	
 	for swapFirst := 1; swapFirst < len(bestRoute) - 2; swapFirst++ {
 		for swapLast := swapFirst + 1; swapLast < len(bestRoute) - 1; swapLast++ {
@@ -104,7 +133,6 @@ func iterateTwoOpt(bestDistance float64, bestRoute []Vertex, distanceMatrix map[
 			}
 		}
 	}
-	// fmt.Printf("New Iteration: New cost: %f\n", newBestDistance)
 	return newBestDistance, newBestRoute
 }
 
@@ -141,7 +169,7 @@ func vertexArrayToInterfaceMap(vertices []Vertex) map[string]interface{} {
 		"length": len(vertices),
 	}
 	for i := 0; i < len(vertices); i++ {
-		resultArray[fmt.Sprintf("%d", i)] = map[string]interface{}{"x": vertices[i].x, "y": vertices[i].y}
+		resultArray[fmt.Sprintf("%d", i)] = map[string]interface{}{"x": vertices[i].X, "y": vertices[i].Y}
 	}
 	return resultArray
 }
@@ -156,7 +184,7 @@ func jsValueToVertexArray(vertices js.Value) []Vertex {
 		index := fmt.Sprintf("%d", i)
 		x := float64(vertices.Get(index).Get("x").Int())
 		y := float64(vertices.Get(index).Get("y").Int())
-		resultArray[i] = Vertex{x: x, y: y}
+		resultArray[i] = Vertex{X: x, Y: y}
 	}
 
 	return resultArray
@@ -164,7 +192,7 @@ func jsValueToVertexArray(vertices js.Value) []Vertex {
 
 func Distance(vertex1 Vertex, vertex2 Vertex) float64 {
 
-	return math.Pow(math.Pow(vertex1.x-vertex2.x, 2)+math.Pow(vertex1.y-vertex2.y, 2), 0.5)
+	return math.Pow(math.Pow(vertex1.X-vertex2.X, 2)+math.Pow(vertex1.Y-vertex2.Y, 2), 0.5)
 }
 
 
