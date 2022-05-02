@@ -50,9 +50,13 @@ self.onmessage = (event) => {
       return;
     }
 
+    console.log("a");
     self.global.DistMat(eventData);
+    console.log("b");
     let bestRoute = eventData;
+    console.log("c");
     let bestDistance = self.global.PathCost(eventData);
+    console.log("d");
 
     self.postMessage({
       eventType: "ITERATE",
