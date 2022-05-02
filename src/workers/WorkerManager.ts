@@ -82,9 +82,6 @@ class WorkerManager {
             path: any;
             cost: any;
           }
-          console.log("finished: ", this.filepath);
-          console.log((eventData as unknown as Event).path);
-          console.log((eventData as unknown as Event).cost);
           this.setWorkerState(WorkerState.READY);
           subscriber.next(eventData);
           subscriber.complete();

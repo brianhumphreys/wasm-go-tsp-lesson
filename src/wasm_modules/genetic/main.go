@@ -59,20 +59,20 @@ func Genetic(initialPath []Vertex) {
 			currentBest = bestOverall
 			mutations = newMutations
 
-			fmt.Println("calling iterate")
-			fmt.Println(currentBest.fitness)
-			fmt.Println(currentBest.vertices)
+			// fmt.Println("calling iterate")
+			// fmt.Println(currentBest.fitness)
+			// fmt.Println(currentBest.vertices)
 			js.Global().Call("iterateGenetic", "ITERATE", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
 		}
 		
 		currentGeneration++
 	}
 
-	fmt.Println("calling finish")
-	fmt.Println(currentBest.fitness)
-	fmt.Println(currentBest.vertices)
-	fmt.Print("recalculate: ")
-	fmt.Println(Fitness(currentBest.vertices))
+	// fmt.Println("calling finish")
+	// fmt.Println(currentBest.fitness)
+	// fmt.Println(currentBest.vertices)
+	// fmt.Print("recalculate: ")
+	// fmt.Println(Fitness(currentBest.vertices))
 	js.Global().Call("iterateGenetic", "FINISH", currentBest.fitness, vertexArrayToInterfaceMap(currentBest.vertices))
 
 }
