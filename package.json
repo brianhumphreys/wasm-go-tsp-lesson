@@ -12,18 +12,31 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.0",
     "@types/react-redux": "^7.1.24",
+    "faker": "^6.6.6",
+    "pondjs": "^0.9.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-redux": "^7.2.8",
     "react-scripts": "5.0.1",
+    "react-timeseries-charts": "^0.16.1",
+    "rxjs": "^7.5.5",
     "typescript": "^4.6.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run compile:go && npm run cp:workers && npm run cp-exec && react-scripts start",
+    "build": "npm run compile:go && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "compile:go": "npm run compile:two-opt && npm run compile:annealing && npm run compile:genetic",
+    "compile:two-opt": "cd ./src/wasm_modules/two_opt && GOOS=js GOARCH=wasm go build -o ../../../public/two_opt.wasm",
+    "compile:annealing": "cd ./src/wasm_modules/annealing && GOOS=js GOARCH=wasm go build -o ../../../public/annealing.wasm",
+    "compile:genetic": "cd ./src/wasm_modules/genetic && GOOS=js GOARCH=wasm go build -o ../../../public/genetic.wasm",
+    "cp:workers": "npm run cp:annealing-worker && npm run cp:genetic-worker && npm run cp:two-opt-worker",
+    "cp:annealing-worker": "cp ./src/workers/worker-annealing.js ./public",
+    "cp:genetic-worker": "cp ./src/workers/worker-genetic.js ./public",
+    "cp:two-opt-worker": "cp ./src/workers/worker-two-opt.js ./public",
+    "cp-exec": "cp ./src/wasm_modules/wasm_exec.js ./public"
   },
   "eslintConfig": {
     "extends": [

@@ -1,0 +1,3 @@
+export const twoOptLink = "https://towardsdatascience.com/around-the-world-in-90-414-kilometers-ce84c03b8552#:~:text=The%202%2Dopt%20algorithm%20works,route%20and%20repeats%20the%20steps.";
+export const geneticLink = "https://towardsdatascience.com/introduction-to-genetic-algorithms-including-example-code-e396e98d8bf3";
+export const annealingLink = "https://towardsdatascience.com/optimization-techniques-simulated-annealing-d6a4785a1de7";

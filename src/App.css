@@ -1,9 +1,10 @@
 .App {
   text-align: center;
+  background-color: rgb(20,30,35);
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 10vmin;
   pointer-events: none;
 }
 
@@ -14,18 +15,293 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  /* background-color: #282c34; */
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header-row {
+  display: flex;
+  flex-direction: row;
+  font-size: calc(10px + 2vmin);
+  color: rgb(223,223,223);
+}
+
+.center-row {
+  justify-content: center;
+}
+
+.left-row {
+  justify-content: flex-start;
+}
+
+.Worker-button {
+  background-color: rgb(31, 76, 152);
+  border: none;
+  height: 2rem;
+  width: 8rem;
+  text-align: center;
+  border-radius: 2px;
+  font-size: 16px;
+  margin: 8px;
+}
+
+.Worker-button:hover {
+  background-color: rgb(56, 109, 174);
+}
+
+.Button-container {
+  display: flex;
+  flex-direction: row;
+  width: 95%;
+  max-width: 1400px;
+  background-color: rgb(32, 40, 48);
+  border-radius: 2px;
+  padding: 20px;
+}
+
+.collapsible {
+  cursor: pointer;
+  padding: 18px;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+
+
+.button-content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: rgb(32, 40, 48);
+  width: 95%;
+  max-width: 1400px;
+  color: white;
+
+}
+
+.drop-down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
+  border-color: rgb(31, 76, 152);
+  background-color: rgb(31, 76, 152);
+  margin-left: auto;
+
+}
+
+/* .flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+} */
+/* .drop-down-image .drop-down-image:hover {
+  transform: scale(-1);
+  -webkit-transform: scaleX(-1);
+} */
+
+.drop-down-image {
+  transition: transform 0.4s;
+  transform-style: preserve-3d;
+}
+
+.drop-down-image.is-flipped {
+  transform: rotateX(180deg);
+}
+
+.drop-down:hover {
+  background-color: rgb(56, 109, 174);
+  border-color: rgb(56, 109, 174);
+  transform: scale(-1);
+  -webkit-transform: scaleX(-1);
+}
+
+.Button-explaination {
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+}
+
+.Button-name {
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 600;
+  margin-right: 20px;
+  color: rgb(223,223,223);
+  width: 100px;
+}
+
+.Section-title {
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 600;
+  margin-right: 20px;
+  color: rgb(223,223,223);
+}
+
+.Button-discription {
+  /* display: flex; */
+  /* align-items: center; */
+  color: rgb(128,128,128);
+  text-align: left;
+  width: 80vw;
+}
+
+.App-link-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.App-link {
+  color: #61dafb;
+  
+}
+
+.Algorithm-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.Canvas-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 95%;
+  max-width: 1400px;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.Canvas-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.Algorithm-header {
+  color: rgb(223,223,223)
+}
+
+.Chart-indicator {
+  height: 16px;
+  width: 16px;
+  border-radius: 8px;
+}
+
+.Read-more-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 20px;
+  width: 120px;
+  background-color: rgb(31, 76, 152);
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.Read-more-link:hover {
+  background-color: rgb(56, 109, 174);
+}
+
+.Read-more {
+  padding-left: 10px;
+}
+
+.Individual-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: rgb(32, 40, 48);
+  margin: 0 0 20px 0;
+  /* padding: 5px; */
+}
+
+.Chart-background {
+  width: 95%;
+  max-width: 1400px;
+  background-color: rgb(32, 40, 48);
+  margin: 20px 0 20px 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.Chart-Legend {
+  display: flex;
+  flex-direction: column;
+  color: rgb(223,223,223);
+  padding: 0 20px 0 20px;
+}
+
+.Legend-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.Chart-color {
+  display: flex;
+  flex-direction: row;
+  height: 350px;
+  width: 70vw;
+  background-color: #fffdd0;
+  padding: 20px;
+  border-radius: 2px;
+}
+
+.Legend-text {
+  text-align: left;
+  color: rgb(128,128,128);
+  width: 40vw;
+}
+
+.Overview-section {
+  width: 95%;
+  max-width: 1400px;
+  background-color: rgb(32, 40, 48);
+  margin: 20px 0 20px 0;
+  padding: 20px;
+}
+
+.Algorithm-list {
+  list-style-type: circle;
+  text-align: left;
+  color: rgb(128,128,128);
+}
+
+.Overview-section-text {
+  color: rgb(128,128,128);
+  text-align: left;
+}
+
+.ref-links {
+  color: red;
+}
+
+.Lengend-item-name {
+  margin-left: 10px;
+  color: rgb(128,128,128);
+}
+
+/* .Chart-inner-container {
+
+} */
+.Chart-container {
+  width: 80%;
 }
 
 @keyframes App-logo-spin {
