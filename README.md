@@ -1,6 +1,14 @@
+
+
 # Getting Started with Building your TSP Solver Website
 
+![alt text](https://github.com/brianhumphreys/wasm-go-tsp-lesson/blob/master/github-assets/tsp-image.png?raw=true)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+When you run the web app, you should see something like this...
+
+https://user-images.githubusercontent.com/26912737/166180314-64ceeab3-c933-40d1-af97-3fe45e2562e8.mov
 
 ## Available Scripts
 
