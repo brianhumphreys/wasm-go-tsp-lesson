@@ -20,7 +20,7 @@ In the project directory, you can run:
 
 ### `npm run build`
 
-### App Details - GoLang WASM + Web Workers = Legitness
+### App Details: GoLang WASM + Web Workers = Legitness
 
 I have not been able to find a whole lot of interactive tutorials for the TSP.  The ones that I have found are not very performant because the rely on delays between each iteration of the algorithms so the UI does not freeze up while the algorithms are chomping away.  This problem can be easily solved with Web Workers!  I am starting out with three algorithms but would eventually like to add more.  If you would like to add one you can do so because I am open sourcing this project!
 
